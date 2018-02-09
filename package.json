@@ -1,0 +1,22 @@
+{
+  "name": "robinbot",
+  "version": "0.0.1",
+  "description": "trading bot",
+  "main": "robinbot.js",
+  "dependencies": {
+    "colors": "^1.1.2",
+    "node-getopt": "^0.2.3",
+    "numbro": "^1.11.1",
+    "pad": "^2.0.3",
+    "quandl": "^0.0.6",
+    "robinhood": "https://github.com/yura505/robinhood-node",
+    "run-series": "^1.1.4",
+    "yahoo-finance": "^0.3.5"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "yura505",
+  "license": "MIT"
+}
