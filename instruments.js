@@ -5,12 +5,12 @@ module.exports = {
     download: function(list, cb) {
         var tickers = [];
         var instruments_tasks = [];
+        process.stdout.write("Downloading instruments: [ ");
         list.forEach(function(symbol) {
-            if (symbol.charAt(0) == "^") return;
             tickers.push(symbol);
             instruments_tasks.push(function(cb) {
                  let ticker = tickers.shift();
-                 console.log("Downloading instrument ["+ticker+"]...");
+                 process.stdout.write(ticker+" ");
                  global.Robinhood.instruments(ticker,function(err, response, body){
                     if (err) return cb(err);
                     for (let t of body.results) {
@@ -24,6 +24,7 @@ module.exports = {
             });
         });
         series(instruments_tasks, function(err, result) {
+            process.stdout.write("]\n");
             cb(err, result);
         });
     },
