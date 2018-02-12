@@ -13,26 +13,7 @@ var sentiment = require('./sentiment.js');
 
 var Markets = module.exports = {
     download: function(cb) {
-        series([function(cb) {
-                    console.log("Downloading number of stocks with Prices Advancing...");
-                    global.quandl.dataset({ source: "URC", table: "NASDAQ_ADV" },
-                        { start_date: dates.year_ago },
-                        function(err, response) {
-                            if (err) return cb(err);
-                            nasdaq_adv = JSON.parse(response);
-                            cb();
-                        })
-                }, 
-                function(cb) {
-                    console.log("Downloading number of stocks with Prices Declining...");
-                    global.quandl.dataset({ source: "URC", table: "NASDAQ_DEC" },
-                        { start_date: dates.year_ago },
-                        function(err, response) {
-                            if (err) return cb(err);
-                            nasdaq_dec = JSON.parse(response);
-                            cb();
-                        })
-                },
+        series([download_adv, download_dec, download_index,
                 function(cb) {
                     console.log("Downloading markets date/time...");
                     global.Robinhood.markets(function(err, resp, body){
@@ -82,8 +63,12 @@ var Markets = module.exports = {
         return hours[0].previous_open_date;
     },
     
+    get compqIndex() {
+        return compq_index;
+    },
+    
     analyse: function() {
-        let nasdaq_composite = quotes.full("^IXIC");
+        let nasdaq_composite = compq_index;
         let nasi = NASI();
         let macd = ta.MACD(nasdaq_composite);
         let sma100 = ta.SMA(nasdaq_composite, 100);
@@ -118,8 +103,66 @@ var Markets = module.exports = {
     }
 }
 
+var compq_index = [ ];
 var nasdaq_adv, nasdaq_dec;
 var hours;
+
+function download_adv(cb) {
+    console.log("Downloading number of stocks with Prices Advancing...");
+    global.quandl.dataset({ source: "URC", table: "NASDAQ_ADV" },
+        { start_date: dates.year_ago },
+        function(err, response) {
+            if (err) return cb(err);
+            let data = JSON.parse(response);
+            if (data.quandl_error !== undefined) {
+                console.error(data.quandl_error.code + " " + data.quandl_error.message);
+                setTimeout(function() {
+                    download_adv(cb);
+                }, 10000);
+            } else {
+                nasdaq_adv = data;
+                setTimeout(cb, 1000);
+            }
+    })
+}
+
+function download_dec(cb) {
+    console.log("Downloading number of stocks with Prices Declining...");
+    global.quandl.dataset({ source: "URC", table: "NASDAQ_DEC" },
+        { start_date: dates.year_ago },
+        function(err, response) {
+            if (err) return cb(err);
+            let data = JSON.parse(response);
+            if (data.quandl_error !== undefined) {
+                console.error(data.quandl_error.code + " " + data.quandl_error.message);
+                setTimeout(function() {
+                    download_dec(cb);
+                }, 10000);
+            } else {
+                nasdaq_dec = data;
+                setTimeout(cb, 1000);
+            }
+    })
+}
+
+function download_index(cb) {
+    console.log("Downloading NASDAQ Composite index...")
+    global.quandl.dataset({ source: "NASDAQOMX", table: "COMP" },
+        { start_date: dates.year_ago },
+        function(err, response) {
+            if (err) return cb(err);
+            let data = JSON.parse(response);
+            if (data.quandl_error !== undefined) {
+                console.error(data.quandl_error.code + " " + data.quandl_error.message);
+                setTimeout(function() {
+                    download_index(cb);
+                }, 10000);
+            } else {
+                parse_nasdaq_composite(data);
+                setTimeout(cb, 1000);
+            }
+    })
+}
 
 function NASI() {
     let length = Math.min(nasdaq_adv.dataset.data.length, nasdaq_dec.dataset.data.length);
@@ -155,3 +198,18 @@ function parseDateUrl(url) {
     return parts.pop() || parts.pop();
 }
 
+function parse_nasdaq_composite(data) {
+    let cDate = data.dataset.column_names.indexOf("Trade Date");
+    let cClose = data.dataset.column_names.indexOf("Index Value");
+    let cHigh = data.dataset.column_names.indexOf("High");
+    let cLow = data.dataset.column_names.indexOf("Low");
+    data.dataset.data.forEach(function(item) {
+        compq_index.push(
+        {
+            date: item[cDate],
+            close: item[cClose],
+            high: item[cHigh],
+            low: item[cLow]
+        });
+    });
+}

@@ -17,8 +17,8 @@ c.robinhood_credentials = {
 
 c.list = { }
 // stocks to trade long
-c.list.long = ["^IXIC","^GSPC","UGA","SMH","XLY","DBC","VGT","IYT","EEM","XOP","DIA","QQQ","XLF","XRT","XLB","XLI","XHB","MOO","PDP","SPY","IWB","PHO",
+c.list.long = ["UGA","SMH","XLY","DBC","VGT","IYT","EEM","XOP","DIA","QQQ","XLF","XRT","XLB","XLI","XHB","MOO","PDP","SPY","IWB","PHO",
     "XLE","IWM","MDY","PID","EFA","FXE","PBW","XLV","EWA","EWC","RWX","SLV","EPI","IBB","EWT","GDX","BOND","JNK","AGG","XLP","TLT","IEF",
     "UUP","PFF","DBA","VNQ","XLU","BOTZ","MTUM","LIT","XBI","XLV","FFTY","PPA","IGV","JETS"];
     
-c.list.short = ["^IXIC","^GSPC","PSQ", "SH", "DOG", "TBF"];
+c.list.short = ["PSQ", "SH", "DOG", "TBF"];

@@ -2,7 +2,7 @@
 
 ## Description
 
-Robinbot is a command-line swing trading bot using Node.js and Robinhood API. It features:
+Robinbot is a command-line swing trading bot using Node.js and unofficial Robinhood API. It features:
 
 - Fully-automated [technical-analysis](http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:introduction_to_technical_indicators_and_oscillators)-based trading approach
 - "Paper" trading mode, just suggesting what's to buy, sell, hold and which stops should be
@@ -78,8 +78,8 @@ Default strategies there just for information and they should not be used as is 
 
 ## TODO
 
-- Replace yahooFinance data source to something other
 - Fix defects
+- Implement new features
 
 Thanks!
 
