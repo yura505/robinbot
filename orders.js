@@ -43,16 +43,19 @@ module.exports = {
         let orders = [], tasks = [];
         today_orders.forEach(function(order) {
             if ((order.trigger == "stop") && (['queued', 'unconfirmed', 'confirmed', 'partially_filled'].includes(order.state))) {
-                console.log("Cancel stop order: "+order.id);
-                orders.push(order);
-                tasks.push(function(cb) {
-                    if (conf.trade) {
-                        global.Robinhood.cancel_order(orders.pop(), function(err, resp, body) {
-                            if (err) return cb(err);
-                            cb();
-                        });
-                    } else cb();
-                });
+                let symbol = instruments.getSymbol(order.instrument);
+                if (conf.list[conf.strategy].includes(symbol)) {
+                    console.log("Cancel stop order: "+order.id);
+                    orders.push(order);
+                    tasks.push(function(cb) {
+                        if (conf.trade) {
+                            global.Robinhood.cancel_order(orders.pop(), function(err, resp, body) {
+                                if (err) return cb(err);
+                                cb();
+                            });
+                        } else cb();
+                    });
+                }
             }
         });
         if ((orders.length > 0) && (conf.trade)) {

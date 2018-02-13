@@ -9,11 +9,13 @@ var ranks = require('./ranks.js');
 var conf = require('./conf.js');
 
 var actions = module.exports = {
-    create: function(symbol, signal, ta) {
+    create: function(symbol, signal, ta, count, price) {
         return {
             symbol: symbol,
             signal: signal,
-            ta: ta
+            ta: ta,
+            count: count,
+            price: price
         }
     },
     
@@ -44,6 +46,10 @@ var actions = module.exports = {
     
     get stop() {
         return _actions.filter(action => action.signal == 'STOP');
+    },
+    
+    get keep() {
+        return _actions.filter(action => action.signal == 'KEEP');
     },
     
     sum: function(actions) {
@@ -143,9 +149,7 @@ var actions = module.exports = {
             }
             if (!found) {
                 let price = quotes.today(lowest_action.symbol).bid;
-                let action = actions.create(symbol, "SELL", { });
-                action.price = price * 0.995;
-                action.count = 1;
+                let action = actions.create(symbol, "SELL", { }, 1, price * 0.995);
                 actions.add(action);
                 lowest_action.count--;
                 cash += price;
@@ -184,25 +188,26 @@ var actions = module.exports = {
             let quantity = n(stop_order.quantity).value();
             if (stop_price > stop_loss) stop_loss = stop_price;
             if ((quantity == count) && (stop_loss == stop_price)) {
+                actions.add(actions.create(symbol, "KEEP", ta, count, stop_price));
                 orders.keepStopOrder(stop_order);
                 return;
             }
         }
         if (stop_loss < quotes.today(symbol).close) {
-            var action = this.create(symbol, "STOP", ta);
-            action.price = stop_loss;
-            action.count = count;
+            var action = this.create(symbol, "STOP", ta, count, stop_loss);
             this.add(action);
         }
     },
     
     get stop_risk() {
-        let today_sum = this.stop.reduce(function(total, action) {
-            return total + quotes.today(action.symbol).close * action.count;
-        }, 0);
-        let stop_sum = this.sum(this.stop);
+        let today_sum = 
+            [...this.keep, ...this.stop].reduce(function(total, action) {
+                return total + quotes.today(action.symbol).close * action.count;
+            }, 0);
+        let stop_sum = this.sum(this.stop) + this.sum(this.keep);
         return today_sum - stop_sum;
     }
 }
     
 var _actions = [ ];
+    
