@@ -3,7 +3,7 @@
 
 var dates = require('./isodate.js');
 
-module.exports = {
+var Sentiment = module.exports = {
     download: 
         function(cb) {
             console.log("Downloading sentiment survey...");
@@ -11,8 +11,16 @@ module.exports = {
                 { start_date: dates.year_ago },
                 function(err, response) {
                     if (err) return cb(err);
-                    analyse(JSON.parse(response));
-                    cb();
+                    var data = JSON.parse(response);
+                    if (data.quandl_error !== undefined) {
+                        console.error(data.quandl_error.code + " " + data.quandl_error.message);
+                        setTimeout(function() {
+                            Sentiment.download(cb);
+                        }, 10000);
+                    } else {
+                        analyse(data);
+                        setTimeout(cb, 1000);
+                    }
                 })
         },
         

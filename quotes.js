@@ -69,7 +69,7 @@ function download_realtime(cb) {
         if (err) {
             console.error(err);
             return setTimeout(function() {
-                download_now(cb);
+                download_realtime(cb);
             }, 10000);
         }
         parse_realtime(body);
