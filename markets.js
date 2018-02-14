@@ -71,6 +71,7 @@ var Markets = module.exports = {
         let nasdaq_composite = compq_index;
         let nasi = NASI();
         let macd = ta.MACD(nasdaq_composite);
+
         let sma100 = ta.SMA(nasdaq_composite, 100);
         let buy = 0, sell = 0;
     
@@ -147,20 +148,21 @@ function download_dec(cb) {
 
 function download_index(cb) {
     console.log("Downloading NASDAQ Composite index...")
-    global.quandl.dataset({ source: "NASDAQOMX", table: "COMP" },
-        { start_date: dates.year_ago },
-        function(err, response) {
-            if (err) return cb(err);
-            let data = JSON.parse(response);
-            if (data.quandl_error !== undefined) {
-                console.error(data.quandl_error.code + " " + data.quandl_error.message);
-                setTimeout(function() {
-                    download_index(cb);
-                }, 10000);
-            } else {
-                parse_nasdaq_composite(data);
-                setTimeout(cb, 1000);
-            }
+    let url = "https://api.iextrading.com/1.0/stock/ONEQ/batch?types=quote,chart&range=1y";
+    request(url, function(err, resp, body) {
+        if (err) {
+            console.error(err);
+            return setTimeout(download_index, 10000);
+        }
+        let jbody = JSON.parse(body);
+        let quote = jbody.quote;
+        let chart = jbody.chart;
+        compq_index = chart.sort(function(a, b) {
+            return new Date(b.date) - new Date(a.date);
+        });
+        quote.close = n(quote.latestPrice).value();
+        compq_index.unshift(quote);
+        cb();
     })
 }
 
@@ -198,18 +200,3 @@ function parseDateUrl(url) {
     return parts.pop() || parts.pop();
 }
 
-function parse_nasdaq_composite(data) {
-    let cDate = data.dataset.column_names.indexOf("Trade Date");
-    let cClose = data.dataset.column_names.indexOf("Index Value");
-    let cHigh = data.dataset.column_names.indexOf("High");
-    let cLow = data.dataset.column_names.indexOf("Low");
-    data.dataset.data.forEach(function(item) {
-        compq_index.push(
-        {
-            date: item[cDate],
-            close: item[cClose],
-            high: item[cHigh],
-            low: item[cLow]
-        });
-    });
-}
