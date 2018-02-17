@@ -91,7 +91,7 @@ ATR: function(x, length) {
     return x[0]['ATR'];
 },
 
-MACD: function(x, offset, source_key) {
+MACDH: function(x, offset, source_key) {
     if (!offset) offset = 0;
     if (!source_key) source_key = 'close';
     this.EMA(x, 12, 'ema_short', source_key);
@@ -160,8 +160,9 @@ SAR: function(x) {
     return { psar: x[0].psar, bull: bull, reverse: reverse };
 },
 
-slow_stochastic: function(x) {
-    let k = 14, d = 3;
+slow_stochastic: function(x, k, d) {
+    if (!k) k = 14;
+    if (!d) d = 3;
     let stochK = [];
     for (let j = 0; j < d; j++) {
       let stochs = [];
@@ -182,6 +183,39 @@ slow_stochastic: function(x) {
 
 ohlc4: function(x) {
     return (x.open + x.high + x.low + x.close) / 4;
+},
+
+RSI: function(x) {
+    let length = 14;
+    for (let i = x.length-length; i >= 0; i--) {
+        var avg_gain = x[i+1]['rsi_avg_gain'];
+        var avg_loss = x[i+1]['rsi_avg_loss'];
+        if (typeof avg_gain === 'undefined') {
+            var gain_sum = 0;
+            var loss_sum = 0;
+            var last_close;
+            x.slice(0, i+length-1).forEach(function (period) {
+                if (last_close) {
+                    if (period.close > last_close) {
+                        gain_sum += period.close - last_close;
+                    } else {
+                        loss_sum += last_close - period.close;
+                    }
+                }
+                last_close = period.close;
+            })        
+            x[i]['rsi_avg_gain'] = gain_sum / length;
+            x[i]['rsi_avg_loss'] = loss_sum / length;
+        } else {
+            var current_gain = x[i].close - x[i+1].close;
+            x[i]['rsi_avg_gain'] = ((avg_gain * (length - 1)) + (current_gain > 0 ? current_gain : 0)) / length;
+            var current_loss = x[i+1].close - x[i].close;
+            x[i]['rsi_avg_loss'] = ((avg_loss * (length - 1)) + (current_loss > 0 ? current_loss : 0)) / length;
+        }
+        var rs = x[i]['rsi_avg_gain'] / x[i]['rsi_avg_loss'];
+        x[i]['rsi'] = Math.round(100 - (100 / (1 + rs)));
+    }
+    return x[0]['rsi'];
 }
 
 }

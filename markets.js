@@ -12,55 +12,28 @@ var sentiment = require('./sentiment.js');
 
 
 var Markets = module.exports = {
+    _hours: [ { next_open_date: null } ],
+    
     download: function(cb) {
-        series([download_adv, download_dec, download_index,
-                function(cb) {
-                    console.log("Downloading markets date/time...");
-                    global.Robinhood.markets(function(err, resp, body){
-                        if (err) return cb(err);
-                        let tasks = [];
-                        body.results.forEach(function(result) {
-                            tasks.push(function(cb) {
-                                request(result.todays_hours, function(err, resp, body) {
-                                    if (err) return cb(err);
-                                    let jbody = JSON.parse(body);
-                                    let hours = {
-                                        is_open: jbody.is_open,
-                                        closes_at: Date.parse(jbody.closes_at),
-                                        opens_at: Date.parse(jbody.opens_at),
-                                        previous_open_date: parseDateUrl(jbody.previous_open_hours),
-                                        next_open_date: parseDateUrl(jbody.next_open_hours)
-                                    };
-                                    cb(null, hours);
-                                })
-                            })
-                        });
-                        series(tasks, function(err, result) {
-                            if (err) cb(err);
-                            hours = result;
-                            cb();
-                        });
-                    });
-                }], 
+        series([download_adv, download_dec, download_index, download_hours],
                 function(err, result) {
-                    Markets.analyse();
                     cb(err, result);
                 });
     },
     
     get isOpen() {
         let now = new Date();
-        return hours.forEach.reduce(function(total, cur) {
+        return this._hours.forEach.reduce(function(total, cur) {
             return total && (cur.is_open && (now < cur.closes_at) && (now > cur.opens_at));
         }, true);
     },
     
     get nextDate() {
-        return hours[0].next_open_date;
+        return this._hours[0].next_open_date;
     },
     
     get prevDate() {
-        return hours[0].previous_open_date;
+        return this._hours[0].previous_open_date;
     },
     
     get compqIndex() {
@@ -68,32 +41,34 @@ var Markets = module.exports = {
     },
     
     analyse: function() {
-        let nasdaq_composite = compq_index;
+        let nasdaq_composite = (global.backtest_offset !== undefined) ?
+            compq_index.slice(global.backtest_offset) : compq_index;
         let nasi = NASI();
-        let macd = ta.MACD(nasdaq_composite);
+        let sent = sentiment.analyse();
+        let macdh = ta.MACDH(nasdaq_composite);
 
         let sma100 = ta.SMA(nasdaq_composite, 100);
         let buy = 0, sell = 0;
     
         if (nasdaq_composite[0].close > sma100) buy++;
-        if (macd > 0) buy++;
-        if (sentiment.result.signal == "BUY") buy++;
+        if (macdh > 0) buy++;
+        if (sent.signal == "BUY") buy++;
         if ((nasi.msi > nasi.ema5) && (nasi.macd > nasi.signal)) buy++;
 
         if (nasdaq_composite[0].close < sma100) sell++;
-        if (macd < 0) sell++;
-        if (sentiment.result.signal == "SELL") sell++;
+        if (macdh < 0) sell++;
+        if (sent.signal == "SELL") sell++;
         if ((nasi.msi < nasi.ema5) && (nasi.macd < nasi.signal)) sell++;
     
         let signal = (buy >= 3) ? "BUY" : (sell >= 3) ? "SELL" : "HOLD";
     
         let log = "MARKET: ";
         log += "close: "+n(nasdaq_composite[0].close).format("0")[nasdaq_composite[0].close >= nasdaq_composite[1].close ? "green" : "red"] + " ";
-        log += "sentiment: "+n(sentiment.result.value).format("0.00")[sentiment.result.signal == "BUY" ? "green" : sentiment.result.signal == "SELL" ? "red" : "reset"] + " ";
+        log += "sentiment: "+n(sent.value).format("0.00")[sent.signal == "BUY" ? "green" : sent.signal == "SELL" ? "red" : "reset"] + " ";
         log += "nasi: (msi:"+n(nasi.msi).format("0.0")[nasi.msi > nasi.msi0 ? "green" : "red"]+
                     ", ema:"+n(nasi.ema5).format("0.0")[nasi.ema5 < nasi.msi ? "green" : "red"]+
-                   ", macd:"+n(nasi.macd-nasi.signal).format("0.0")[nasi.signal < nasi.macd ? "green" : "red"]+") ";
-        log += "macd: "+n(macd).format("0.0")[macd > 0 ? "green" : "red"]+" ";
+                   ", macdh:"+n(nasi.macd-nasi.signal).format("0.0")[nasi.signal < nasi.macd ? "green" : "red"]+") ";
+        log += "macdh: "+n(macdh).format("0.0")[macdh > 0 ? "green" : "red"]+" ";
         log += "sma: "+n(sma100).format("0")[sma100 < nasdaq_composite[0].close ? "green" : "red"] + " ";
         log += "signal: "+(signal ? signal : "")[(signal == "BUY") ? 'green' : (signal == "SELL") ? 'red' : 'reset'];
         console.log("");
@@ -106,12 +81,11 @@ var Markets = module.exports = {
 
 var compq_index = [ ];
 var nasdaq_adv, nasdaq_dec;
-var hours;
 
 function download_adv(cb) {
     console.log("Downloading number of stocks with Prices Advancing...");
     global.quandl.dataset({ source: "URC", table: "NASDAQ_ADV" },
-        { start_date: dates.year_ago },
+        { start_date: dates.two_years_ago },
         function(err, response) {
             if (err) return cb(err);
             let data = JSON.parse(response);
@@ -130,7 +104,7 @@ function download_adv(cb) {
 function download_dec(cb) {
     console.log("Downloading number of stocks with Prices Declining...");
     global.quandl.dataset({ source: "URC", table: "NASDAQ_DEC" },
-        { start_date: dates.year_ago },
+        { start_date: dates.two_years_ago },
         function(err, response) {
             if (err) return cb(err);
             let data = JSON.parse(response);
@@ -148,7 +122,7 @@ function download_dec(cb) {
 
 function download_index(cb) {
     console.log("Downloading NASDAQ Composite index...")
-    let url = "https://api.iextrading.com/1.0/stock/ONEQ/batch?types=quote,chart&range=1y";
+    let url = "https://api.iextrading.com/1.0/stock/ONEQ/batch?types=quote,chart&range=2y";
     request(url, function(err, resp, body) {
         if (err) {
             console.error(err);
@@ -164,6 +138,38 @@ function download_index(cb) {
         compq_index.unshift(quote);
         cb();
     })
+}
+
+function download_hours(cb) {
+    if (global.Robinhood === undefined) {
+        return cb();
+    }
+    console.log("Downloading markets date/time...");
+    global.Robinhood.markets(function(err, resp, body){
+        if (err) return cb(err);
+        let tasks = [];
+        body.results.forEach(function(result) {
+            tasks.push(function(cb) {
+                request(result.todays_hours, function(err, resp, body) {
+                    if (err) return cb(err);
+                    let jbody = JSON.parse(body);
+                    let hours = {
+                        is_open: jbody.is_open,
+                        closes_at: Date.parse(jbody.closes_at),
+                        opens_at: Date.parse(jbody.opens_at),
+                        previous_open_date: parseDateUrl(jbody.previous_open_hours),
+                        next_open_date: parseDateUrl(jbody.next_open_hours)
+                    };
+                    cb(null, hours);
+                })
+            })
+        });
+        series(tasks, function(err, result) {
+            if (err) cb(err);
+            Markets._hours = result;
+            cb();
+        });
+    });
 }
 
 function NASI() {
@@ -190,9 +196,10 @@ function NASI() {
         rana[i]['msi0'] = rana[i+1]['msi'];
     }
     ta.EMA(rana, 5, 'ema5', 'msi');
-    ta.MACD(rana, 0, 'msi');
+    ta.MACDH(rana, 0, 'msi');
 
-    return rana[0];
+    return (global.backtest_offset !== undefined) ? 
+        rana[global.backtest_offset] : rana[0];
 }
 
 function parseDateUrl(url) {

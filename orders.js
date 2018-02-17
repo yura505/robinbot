@@ -4,7 +4,10 @@ var n = require('numbro');
 
 var dates = require('./isodate.js');
 var instruments = require('./instruments.js');
+var account = require('./account.js');
+var positions = require('./positions.js');
 var conf = require('./conf.js');
+var quotes = require('./quotes.js');
 
 module.exports = {
 
@@ -15,28 +18,40 @@ module.exports = {
                 if (err) return cb(err);
                 today_orders = body.results;
                 cb();
-        })
+        });
     },
     
     isSoldToday: function(symbol) {
-        for (let order of today_orders) {
-            if ((instruments.getSymbol(order.instrument) == symbol) &&
-                (order.side == 'sell') && ((order.state == 'partially_filled') || (order.state == 'filled')))
-            return true;
+        if (!global.backtest) {
+            for (let order of today_orders) {
+                if ((instruments.getSymbol(order.instrument) == symbol) &&
+                    (order.side == 'sell') && ((order.state == 'partially_filled') || (order.state == 'filled')))
+                return true;
+            }
         }
         return false;
     },
     
     getStopOrder: function(symbol) {
-        for (let order of today_orders) {
-            if ((instruments.getSymbol(order.instrument) == symbol) &&
-               (order.side == 'sell') && (order.state == 'confirmed') && (order.trigger == 'stop'))
-            return order;
+        if (global.backtest) {
+            for (let order of backtest_orders) {
+                if (order.symbol === symbol) return order;
+            }
+        } else {
+            for (let order of today_orders) {
+                if ((instruments.getSymbol(order.instrument) == symbol) &&
+                   (order.side == 'sell') && (order.state == 'confirmed') && (order.trigger == 'stop'))
+                return order;
+            }
         }
     },
     
     keepStopOrder: function(order) {
-        today_orders = today_orders.filter(item => item !== order);
+        if (global.backtest) {
+            order.keep = true;
+        } else {
+            today_orders = today_orders.filter(item => item !== order);
+        }
     },
     
     cancelStopOrders: function(cb) {
@@ -71,7 +86,7 @@ module.exports = {
             cb();
         });
     },
-    
+
     prepare: function(sell, buy, stop) {
         sell.forEach(function(action) {
             if (action.count > 0) {
@@ -143,7 +158,7 @@ module.exports = {
                 let options = {
                     trigger: "stop",
                     time: "gtc",
-                    stop_price: n(action.price).format('0.01'),
+                    stop_price: n(action.price).format('0.00'),
                     quantity: action.count,
                     instrument: {
                         url: instruments.getInstrument(action.symbol),
@@ -172,6 +187,48 @@ module.exports = {
              }
              console.log("Completed");
         });
+    },
+    
+    /* backtest methods */
+
+    backtest: function(sell, buy, stop) {
+        backtest_orders = backtest_orders.filter(order => order.keep === true);
+        sell.forEach(function(action) {
+            if (action.count > 0) {
+                account.cash += positions.remove(action.symbol, action.price, action.count);
+            }
+        });
+        buy.forEach(function(action) {
+            if (action.count > 0) {
+                account.cash -= positions.add(action.symbol, normalize_price(action.price), action.count);
+            }
+        });
+        stop.forEach(function(action) {
+            if (action.count > 0) {
+                backtest_orders.push({
+                    symbol: action.symbol,
+                    stop_price: action.price,
+                    quantity: action.count
+                });
+            }        
+        });
+    },
+    
+    triggerStops: function() {
+        backtest_orders.forEach(function(order) {
+            let quote = quotes.get(order.symbol)[0];
+            if (order.stop_price > quote.open) {
+                account.cash += positions.remove(order.symbol, quote.open, order.quantity);
+                order.executed = true;
+                console.log("STOP triggered: "+order.symbol);
+            } else if (order.stop_price > quote.low) {
+                account.cash += positions.remove(order.symbol, order.stop_price, order.quantity);
+                order.executed = true;
+                console.log("STOP triggered: "+order.symbol);
+            }
+            order.keep = false;
+        });
+        backtest_orders = backtest_orders.filter(order => order.executed !== true);
     }
 }
 
@@ -179,6 +236,8 @@ var today_orders;
 var sell_orders = [ ];
 var buy_orders = [ ];
 var stop_orders = [ ];
+
+var backtest_orders = [ ];
 
 function normalize_price(price) {
     let p = (Math.ceil(price*20)/20).toFixed(2);

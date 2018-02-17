@@ -8,7 +8,7 @@ var Sentiment = module.exports = {
         function(cb) {
             console.log("Downloading sentiment survey...");
             global.quandl.dataset({ source: "AAII", table: "AAII_SENTIMENT" },
-                { start_date: dates.year_ago },
+                { start_date: dates.two_years_ago },
                 function(err, response) {
                     if (err) return cb(err);
                     var data = JSON.parse(response);
@@ -18,46 +18,53 @@ var Sentiment = module.exports = {
                             Sentiment.download(cb);
                         }, 10000);
                     } else {
-                        analyse(data);
+                        _data = data;
                         setTimeout(cb, 1000);
                     }
                 })
         },
         
-    get result() {
-        return result;
+    analyse: function() {
+        return _analyse();
     }
 }
 
 var result;
+var _data;
 
-function analyse(data) {
-    let cBullish = data.dataset.column_names.indexOf("Bullish");
-    let cBullishPlus = data.dataset.column_names.indexOf("Bullish Average + St. Dev");
-    let cBullishMinus = data.dataset.column_names.indexOf("Bullish Average - St. Dev");
+function _analyse() {
+    let cBullish = _data.dataset.column_names.indexOf("Bullish");
+    let cBullishPlus = _data.dataset.column_names.indexOf("Bullish Average + St. Dev");
+    let cBullishMinus = _data.dataset.column_names.indexOf("Bullish Average - St. Dev");
     
     let signal;
     
-    for (let i=0; i<data.dataset.data.length; i++) {
-        if (data.dataset.data[i+1][cBullish] > data.dataset.data[i][cBullish]) {
-            if ((i > 0) && (data.dataset.data[i][cBullish] < data.dataset.data[i-1][cBullish]))
+    let data = _data.dataset.data.slice();
+    if (global.backtest) {
+        while (new Date(data[0][0]) > new Date(dates.today)) {
+            data = data.slice(1);
+        }
+    }
+    for (let i=0; i<data.length; i++) {
+        if (data[i+1][cBullish] > data[i][cBullish]) {
+            if ((i > 0) && (data[i][cBullish] < data[i-1][cBullish]))
                 break;
-            if ((data.dataset.data[i+1][cBullish] > data.dataset.data[i+1][cBullishPlus]) &&
-                (data.dataset.data[i][cBullish] < data.dataset.data[i][cBullishPlus])) {
+            if ((data[i+1][cBullish] > data[i+1][cBullishPlus]) &&
+                (data[i][cBullish] < data[i][cBullishPlus])) {
                signal = "SELL";
                break;
             }
         } else {
-            if ((i > 0) && (data.dataset.data[i][cBullish] > data.dataset.data[i-1][cBullish]))
+            if ((i > 0) && (data[i][cBullish] > data[i-1][cBullish]))
                 break;
-            if ((data.dataset.data[i+1][cBullish] < data.dataset.data[i+1][cBullishMinus]) &&
-                (data.dataset.data[i][cBullish] > data.dataset.data[i][cBullishMinus])) {
+            if ((data[i+1][cBullish] < data[i+1][cBullishMinus]) &&
+                (data[i][cBullish] > data[i][cBullishMinus])) {
                signal = "BUY";
                break;
             }
         }
     }
 
-    result = { signal: signal, value: data.dataset.data[0][cBullish] };
+    return { signal: signal, value: data[0][cBullish] };
 }
 

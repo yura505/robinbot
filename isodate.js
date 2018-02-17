@@ -1,14 +1,20 @@
 
 module.exports = {
-    get today() { return getNdaysAgoDate(0) },
+    _today_date: getNdaysAgoDate(0),
+    get today() { 
+        return this._today_date;
+    },
     get yesterday() { return getNdaysAgoDate(1) },
     get year_ago() { return getNdaysAgoDate(365) },
+    get two_years_ago() { return getNdaysAgoDate(365*2) },
     diff: function(first, second) {
         var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
         var firstDate = new Date(first);
         var secondDate = new Date(second);
         return Math.round(Math.abs((firstDate.getTime() - secondDate.getTime())/(oneDay)));
     }
+    
+    
 }
 
 function getNdaysAgoDate(n) {

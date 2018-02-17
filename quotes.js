@@ -13,16 +13,10 @@ module.exports = {
         });
     },
 
-    today: function(symbol) {
-        return quotes_today[symbol];
-    },
-    
-    historical: function(symbol) {
-        return quotes_historical[symbol];
-    },
-    
-    full: function(symbol) {
-        return [quotes_today[symbol], ...quotes_historical[symbol]];
+    get: function(symbol) {
+        return (global.backtest_offset > 0) ? 
+            quotes_historical[symbol].slice(global.backtest_offset) :
+            [quotes_today[symbol], ...quotes_historical[symbol]];
     }
 }
 
@@ -34,7 +28,7 @@ var today_list;
 function download_historical(cb) {
     console.log("Downloading historical quotes...");
     let url = "https://api.iextrading.com/1.0/stock/market/batch?symbols="+
-              historical_list.join(',')+"&types=chart&range=1y";
+              historical_list.join(',')+"&types=chart&range=2y";
     request(url, function(err, resp, body) {
         if (err) {
             console.error(err);
@@ -64,6 +58,9 @@ function download_today(cb) {
 }
 
 function download_realtime(cb) {
+    if (global.Robinhood === undefined) {
+        return cb();
+    }
     console.log("Downloading real-time quotes...");
     global.Robinhood.quote_data(today_list, function(err, resp, body) {
         if (err) {
@@ -101,7 +98,7 @@ function parse_realtime(body) {
     body.results.forEach(function(item) {
         // adjust today quotes with real-time data
         var quote = quotes_today[item.symbol];
-        quote.ask = quote.bid = quote.close = n(item.last_trade_price).value();
+        quote.close = n(item.last_trade_price).value();
         quote.high = Math.max(quote.high, quote.close);
         quote.low = Math.min(quote.low, quote.close);
     });

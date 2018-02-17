@@ -22,3 +22,7 @@ c.list.long = ["UGA","SMH","XLY","DBC","VGT","IYT","EEM","XOP","DIA","QQQ","XLF"
     "UUP","PFF","DBA","VNQ","XLU","BOTZ","MTUM","LIT","XBI","XLV","FFTY","PPA","IGV","JETS"];
     
 c.list.short = ["PSQ", "SH", "DOG", "TBF"];
+
+// backtest
+c.backtest = { }
+c.backtest.cash = 10000

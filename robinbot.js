@@ -12,7 +12,7 @@ var instruments = require('./instruments.js');
 var earnings = require('./earnings.js');
 var strategy = require('./strategy.js');
 var positions = require('./positions.js');
-var ranks = require('./ranks.js');
+var rsa = require('./rsa.js');
 var account = require('./account.js');
 var actions = require('./actions.js');
 var orders = require('./orders.js');
@@ -60,8 +60,9 @@ global.Robinhood = require('robinhood')(conf.robinhood_credentials, function(){
             console.error(err);
             process.exit();
         }
-        ranks.calculate(clist);
-        strategy.run(clist.sort(ranks.sort));
+        rsa.calculate(clist);
+        markets.analyse();
+        strategy.run(clist.sort(rsa.sort));
 
         actions.align();
         console.log("CASH VALUE: "+account.cash);

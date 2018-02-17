@@ -37,6 +37,14 @@ module.exports = {
     
     getInstrument: function(symbol) {
         return ticker_instrument[symbol];
+    },
+    
+    /* backtest methods */
+    addSymbol: function(symbol) {
+        let url = "/"+symbol+"/";
+        ticker_instrument[symbol] = url; 
+        instrument_ticker[symbol] = symbol;
+        return url;
     }
     
 }
