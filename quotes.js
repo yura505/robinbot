@@ -28,7 +28,7 @@ var today_list;
 function download_historical(cb) {
     console.log("Downloading historical quotes...");
     let url = "https://api.iextrading.com/1.0/stock/market/batch?symbols="+
-              historical_list.join(',')+"&types=chart&range=2y";
+              historical_list.slice(0, 99).join(',')+"&types=chart&range=2y";
     request(url, function(err, resp, body) {
         if (err) {
             console.error(err);
@@ -37,6 +37,8 @@ function download_historical(cb) {
             }, 10000);
         }
         parse_historical(body);
+        if (historical_list.length > 0)
+            return download_historical(cb);
         cb();
     })
 }
@@ -44,7 +46,7 @@ function download_historical(cb) {
 function download_today(cb) {
     console.log("Downloading delayed today quotes...");
     let url = "https://api.iextrading.com/1.0/stock/market/batch?symbols="+
-              today_list.join(',')+"&types=quote";
+              today_list.slice(0, 99).join(',')+"&types=quote";
     request(url, function(err, resp, body) {
         if (err) {
             console.error(err);
@@ -53,6 +55,8 @@ function download_today(cb) {
             }, 10000);
         }
         parse_today(body);
+        if (today_list.length > 0)
+            return download_today(cb);
         cb();
     })
 }
@@ -81,6 +85,7 @@ function parse_historical(jquotes) {
             return new Date(b.date) - new Date(a.date);
         });
         quotes_historical[symbol] = charts;
+        historical_list.splice(historical_list.indexOf(symbol), 1);
     }
 }
 
@@ -90,6 +95,7 @@ function parse_today(jquotes) {
         let quote = quotes[symbol].quote;
         quote.volume = quote.latestVolume;
         quotes_today[symbol] = quote;
+        today_list.splice(today_list.indexOf(symbol), 1);
     }
 }
 

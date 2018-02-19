@@ -67,7 +67,7 @@ module.exports = {
     get value() {
         return nonzero_positions.reduce(function(total, pos) {
             let symbol = instruments.getSymbol(pos.url);
-            return total + (symbol !== undefined) ? n(pos.quantity).multiply(quotes.get(symbol)[0].close).value() : 0;
+            return total + ((symbol !== undefined) ? n(pos.quantity).multiply(quotes.get(symbol)[0].close).value() : 0);
         }, 0);
     }
     

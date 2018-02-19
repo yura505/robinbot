@@ -11,6 +11,7 @@ Robinbot is a command-line swing trading bot using Node.js and unofficial Robinh
 - Earnings announcements impacts
 - Market breadth analysis
 - User defined strategies
+- Fundamental analysis
 - Backtest
 
 The bot performs technical analysis and places orders, for best results it should be run once a day at the end of market day, ex. 15 minutes before close.

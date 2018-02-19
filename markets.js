@@ -21,6 +21,10 @@ var Markets = module.exports = {
                 });
     },
     
+    download_index: function(cb) {
+        download_index(cb);
+    },
+    
     get isOpen() {
         let now = new Date();
         return this._hours.forEach.reduce(function(total, cur) {
