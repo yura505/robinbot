@@ -8,6 +8,7 @@ module.exports = {
     download: function(list, cb) {
         historical_list = list.slice();
         today_list = list.slice();
+        rt_list = list.slice();
         series([download_historical, download_today, download_realtime], function(err, result) {
             cb(err, result);
         });
@@ -24,6 +25,7 @@ var quotes_today = { };
 var quotes_historical = { };
 var historical_list;
 var today_list;
+var rt_list;
 
 function download_historical(cb) {
     console.log("Downloading historical quotes...");
@@ -66,7 +68,7 @@ function download_realtime(cb) {
         return cb();
     }
     console.log("Downloading real-time quotes...");
-    global.Robinhood.quote_data(today_list, function(err, resp, body) {
+    global.Robinhood.quote_data(rt_list, function(err, resp, body) {
         if (err) {
             console.error(err);
             return setTimeout(function() {

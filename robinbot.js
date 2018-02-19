@@ -50,7 +50,7 @@ global.Robinhood = require('robinhood')(conf.robinhood_credentials, function(){
         }, function(cb) {
             markets.download(cb);
         },  function(cb) {
-            earnings.download(cb);
+            earnings.download(clist, cb);
         }
     ];
 
