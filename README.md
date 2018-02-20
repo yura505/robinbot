@@ -48,7 +48,7 @@ Install dependencies:
 npm install
 ```
 
-## Run a backtest of default strategy
+## Run a previous year backtest of default strategy
 ```
 ./backtest.js
 ```
