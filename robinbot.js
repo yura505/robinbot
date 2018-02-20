@@ -20,13 +20,13 @@ var conf = require('./conf.js');
 
 var opt = require('node-getopt').create([
   ['t' , 'trade'               , 'trade mode (default = paper)'],
-  ['s' , 'strategy=ARG'        , 'short / long (default long)'],
+  ['s' , 'strategy=ARG'        , 'macd, sar, k39, slow_stoch (default k39)'],
   ['h' , 'help'                , 'display this help'],
 ]).bindHelp().parseSystem();
 
 conf.trade = opt.options.trade;
-conf.strategy = (opt.options.strategy === 'short') ? 'short' : 'long';
-var clist = conf.list[conf.strategy];
+conf.strategy = (opt.options.strategy) ? opt.options.strategy : 'default';
+var clist = conf.list;
 
 console.log("*** ROBINBOT ("+(conf.trade ? "trade" : "paper")+" mode) today: "+
     dates.today+" "+(new Date).toLocaleTimeString());

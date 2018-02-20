@@ -15,14 +15,10 @@ c.robinhood_credentials = {
     password: ''
 };
 
-c.list = { }
-// stocks to trade long
-c.list.long = ["UGA","SMH","XLY","DBC","VGT","IYT","EEM","XOP","DIA","QQQ","XLF","XRT","XLB","XLI","XHB","MOO","PDP","SPY","IWB","PHO",
-    "XLE","IWM","MDY","PID","EFA","FXE","PBW","XLV","EWA","EWC","RWX","SLV","EPI","IBB","EWT","GDX","BOND","JNK","AGG","XLP","TLT","IEF",
-    "UUP","PFF","DBA","VNQ","XLU","BOTZ","MTUM","LIT","XBI","XLV","FFTY","PPA","IGV","JETS"];
+// List of securities to trade
+c.list = ["AMZN","NVDA","HP","MU","ADBE","PXD","TROW","STI","BABA","VGT","PLNT","CBOE","FDX",
+    "FFTY","RHT","QQQ","UGA","SMH","DIA","SPY","LIT","IWM","XLF","XBI","XLV","IBB"];
     
-c.list.short = ["PSQ", "SH", "DOG", "TBF"];
-
 // backtest
 c.backtest = { }
 c.backtest.cash = 10000
