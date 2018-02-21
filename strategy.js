@@ -125,7 +125,7 @@ var strategy = module.exports = {
     
     sar: function(symbol, TA) {
         let signal = null;
-        if ((TA.sar) && (TA.sar.reverse)) {
+        if ((TA.adx > 20) && (TA.sar) && (TA.sar.reverse)) {
             signal = (TA.sar.bull) ? "BUY" : "SELL";
         }
         return signal;
