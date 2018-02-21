@@ -88,7 +88,7 @@ var strategy = module.exports = {
 
         if ((TA.adx > 20) && (TA.diPlus > TA.diMinus) && (TA.macdh0 < 0) && (TA.macdh > 0)) {
             signal = "BUY";
-        } if (TA.macd < 0) {
+        } if (TA.macdh < 0) {
             signal = "SELL";
         }
         return signal;
