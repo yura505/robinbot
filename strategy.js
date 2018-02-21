@@ -23,7 +23,7 @@ var strategy = module.exports = {
 
         list.forEach(function(symbol) {
             let q = quotes.get(symbol);
-            let e = earnings.get(symbol);
+            let e = earnings.getAnnouncement(symbol);
             let TA = {
                 close: q[0].close,
                 percentage: (ta.ohlc4(q[0]) - ta.ohlc4(q[1])) / ta.ohlc4(q[0]),

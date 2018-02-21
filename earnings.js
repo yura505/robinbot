@@ -32,17 +32,8 @@ module.exports = {
         return reports[0][field] > reports[1][field] && reports[0][field] > reports[reports.length-1][field];
     },
     
-    get: function(symbol) {
-        for (let element of earnings_announcements) {
-            if ((element.symbol == symbol) &&
-                (dates.diff(dates.today, element.report.date) <= 5) &&
-                (new Date(dates.today) < new Date(element.report.date)))
-                return { date: element.report.date, timing: element.report.timing };
-        }
-    },
-    
     soon: function(symbol) {
-        let e = this.get(symbol);
+        let e = this.getAnnouncement(symbol);
         if (e !== undefined) {
            return ((e.date == dates.today && e.timing == "pm") || (e.date == markets.nextDate && e.timing == "am"))
         }
