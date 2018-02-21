@@ -7,6 +7,7 @@ var account = require('./account.js');
 var quotes = require('./quotes.js');
 var rsa = require('./rsa.js');
 var conf = require('./conf.js');
+var markets = require('./markets.js');
 
 var actions = module.exports = {
     create: function(symbol, signal, ta, count, price) {
@@ -21,7 +22,7 @@ var actions = module.exports = {
     
     align: function() {
         _actions.forEach(function(action) {
-            if ((action.signal == "BUY") && (orders.isSoldToday(action.symbol)))
+            if ((action.signal == "BUY") && (orders.isSoldToday(action.symbol) || markets.breadth !== "BUY"))
                 action.signal = null;
             if ((action.signal == "SELL") && (positions.exists(action.symbol) === undefined))
                 action.signal = null;
