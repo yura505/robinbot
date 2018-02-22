@@ -22,9 +22,9 @@ var actions = module.exports = {
     
     align: function() {
         _actions.forEach(function(action) {
-            if ((action.signal == "BUY") && (orders.isSoldToday(action.symbol) || markets.breadth !== "BUY"))
-                action.signal = null;
-            if ((action.signal == "SELL") && (positions.exists(action.symbol) === undefined))
+            // reset action.signal if needed
+            if (((action.signal == "BUY") && (orders.isSoldToday(action.symbol) || markets.breadth !== "BUY")) ||
+                ((action.signal == "SELL") && (positions.exists(action.symbol) === undefined)))
                 action.signal = null;
         });
     },

@@ -32,6 +32,7 @@ console.log("*** BACKTEST today: "+
     
 global.quandl = new require('quandl')({ auth_token: conf.quandl_token });
 
+// download backtest data
 var downloads = [
        function(cb) {
         sentiment.download(cb);
@@ -46,6 +47,7 @@ var downloads = [
 
 series(downloads, function(err, results)
 {
+    // run the backtest simulation
     account.cash = conf.backtest.cash;
     for (let i = 252; i > 0; i--) {
         global.backtest_offset = i-1;
@@ -65,6 +67,7 @@ series(downloads, function(err, results)
         
         actions.clear();
     }
+    // output the simulation results
     let final_cash = (account.cash + positions.value);
     console.log("Final cash: " + final_cash);
     console.log("Last year profit: " + (final_cash / conf.backtest.cash - 1) * 100 + " %");

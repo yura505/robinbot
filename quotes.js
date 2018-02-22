@@ -27,6 +27,7 @@ var historical_list;
 var today_list;
 var rt_list;
 
+// historical from iextrading
 function download_historical(cb) {
     console.log("Downloading historical quotes...");
     let url = "https://api.iextrading.com/1.0/stock/market/batch?symbols="+
@@ -45,6 +46,7 @@ function download_historical(cb) {
     })
 }
 
+// today from iextrading
 function download_today(cb) {
     console.log("Downloading delayed today quotes...");
     let url = "https://api.iextrading.com/1.0/stock/market/batch?symbols="+
@@ -63,6 +65,7 @@ function download_today(cb) {
     })
 }
 
+// realtime from robinhood
 function download_realtime(cb) {
     if (global.Robinhood === undefined) {
         return cb();
@@ -80,6 +83,7 @@ function download_realtime(cb) {
     });
 }
 
+// parse iextrading historical response
 function parse_historical(jquotes) {
     let quotes = JSON.parse(jquotes);
     for (symbol in quotes) {
@@ -91,6 +95,7 @@ function parse_historical(jquotes) {
     }
 }
 
+// parse iextrading today response
 function parse_today(jquotes) {
     let quotes = JSON.parse(jquotes);
     for (symbol in quotes) {
@@ -101,6 +106,7 @@ function parse_today(jquotes) {
     }
 }
 
+// parse realtime robinhood response
 function parse_realtime(body) {
     //console.log(body);
     body.results.forEach(function(item) {
