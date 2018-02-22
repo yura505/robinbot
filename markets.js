@@ -10,6 +10,8 @@ var dates = require('./isodate.js');
 var quotes = require('./quotes.js');
 var sentiment = require('./sentiment.js');
 
+var compq_index = [ ];
+var nasdaq_adv, nasdaq_dec;
 
 var Markets = module.exports = {
     _hours: [ { next_open_date: null } ],
@@ -48,24 +50,28 @@ var Markets = module.exports = {
         let nasdaq_composite = (global.backtest_offset !== undefined) ?
             compq_index.slice(global.backtest_offset) : compq_index;
         let nasi = NASI();
-        let sent = sentiment.analyse();
+        let sent = sentiment.analyse(); // do the analysis
         let macdh = ta.MACDH(nasdaq_composite);
 
         let sma100 = ta.SMA(nasdaq_composite, 100);
         let buy = 0, sell = 0;
-    
+
+        // determine BUY strength
         if (nasdaq_composite[0].close > sma100) buy++;
         if (macdh > 0) buy++;
         if (sent.signal == "BUY") buy++;
         if ((nasi.msi > nasi.ema5) && (nasi.macd > nasi.signal)) buy++;
 
+        // determine SELL strength
         if (nasdaq_composite[0].close < sma100) sell++;
         if (macdh < 0) sell++;
         if (sent.signal == "SELL") sell++;
         if ((nasi.msi < nasi.ema5) && (nasi.macd < nasi.signal)) sell++;
-    
+
+        // determine the signal string, BUY or SELL
         let signal = (buy >= 3) ? "BUY" : (sell >= 3) ? "SELL" : "HOLD";
-    
+
+        // log the results
         let log = "MARKET: ";
         log += "close: "+n(nasdaq_composite[0].close).format("0")[nasdaq_composite[0].close >= nasdaq_composite[1].close ? "green" : "red"] + " ";
         log += "sentiment: "+n(sent.value).format("0.00")[sent.signal == "BUY" ? "green" : sent.signal == "SELL" ? "red" : "reset"] + " ";
@@ -83,9 +89,7 @@ var Markets = module.exports = {
     }
 }
 
-var compq_index = [ ];
-var nasdaq_adv, nasdaq_dec;
-
+// prices advancing (from quandl)
 function download_adv(cb) {
     console.log("Downloading number of stocks with Prices Advancing...");
     global.quandl.dataset({ source: "URC", table: "NASDAQ_ADV" },
@@ -105,6 +109,7 @@ function download_adv(cb) {
     })
 }
 
+// prices declining (from quandl)
 function download_dec(cb) {
     console.log("Downloading number of stocks with Prices Declining...");
     global.quandl.dataset({ source: "URC", table: "NASDAQ_DEC" },
@@ -124,6 +129,7 @@ function download_dec(cb) {
     })
 }
 
+// composite index (from iextrading)
 function download_index(cb) {
     console.log("Downloading NASDAQ Composite index...")
     let url = "https://api.iextrading.com/1.0/stock/ONEQ/batch?types=quote,chart&range=2y";
@@ -144,6 +150,7 @@ function download_index(cb) {
     })
 }
 
+// date/time (from robinhood)
 function download_hours(cb) {
     if (global.Robinhood === undefined) {
         return cb();

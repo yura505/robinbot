@@ -1,4 +1,4 @@
-
+// date helper functions
 module.exports = {
     _today_date: getNdaysAgoDate(0),
     get today() { 
