@@ -75,7 +75,7 @@ function download_recent_earnings(cb) {
             if (global.backtest) {
                 lst.forEach(earning => {
                     earnings_announcements.push({
-                        symbol: symbol,
+                        symbol,
                         report : { date: earning.EPSReportDate, timing: "am" }
                     });
                 });

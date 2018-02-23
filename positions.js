@@ -40,7 +40,7 @@ module.exports = {
         var pos = this.exists(symbol);
         if (pos === undefined) {
             let url = instruments.addSymbol(symbol);
-            nonzero_positions.push({ url: url, quantity: count, average_buy_price: price });
+            nonzero_positions.push({ url, quantity: count, average_buy_price: price });
         } else {
             pos.quantity += count;
         }

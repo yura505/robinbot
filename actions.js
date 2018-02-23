@@ -12,12 +12,12 @@ var markets = require('./markets.js');
 var actions = module.exports = {
     create(symbol, signal, ta, count, price) {
         return {
-            symbol: symbol,
-            signal: signal,
-            ta: ta,
-            count: count,
-            price: price
-        }
+            symbol,
+            signal,
+            ta,
+            count,
+            price
+        };
     },
     
     align() {

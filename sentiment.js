@@ -64,6 +64,6 @@ function _analyse() {
         }
     }
 
-    return { signal: signal, value: data[0][cBullish] };
+    return { signal, value: data[0][cBullish] };
 }
 

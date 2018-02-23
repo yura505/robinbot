@@ -156,7 +156,7 @@ SAR(x) {
             }
         }
     }
-    return { psar: x[0].psar, bull: bull, reverse: reverse };
+    return { psar: x[0].psar, bull, reverse };
 },
 
 slow_stochastic(x, k, d) {
