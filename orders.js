@@ -55,7 +55,8 @@ module.exports = {
     },
     
     cancelStopOrders(cb) {
-        let orders = [], tasks = [];
+        let orders = [];
+        let tasks = [];
         today_orders.forEach(order => {
             if ((order.trigger == "stop") && (['queued', 'unconfirmed', 'confirmed', 'partially_filled'].includes(order.state))) {
                 let symbol = instruments.getSymbol(order.instrument);

@@ -104,7 +104,8 @@ MACDH(x, offset, source_key) {
 },
 
 SAR(x) {
-    let iaf = 0.02, maxaf = 0.2;
+    let iaf = 0.02;
+    let maxaf = 0.2;
     let bull = true;
     let af = iaf;
     let lp = x[x.length-1].low;
@@ -167,7 +168,8 @@ slow_stochastic(x, k, d) {
       let stochs = [];
       for (let i = 0; i < d; i++)
         stochs.push((((x, length) => {
-            let low = [], high = [];
+            let low = [];
+            let high = [];
             x.slice(0, length).forEach(period => {
                 low.push(period.low);
                 high.push(period.high);

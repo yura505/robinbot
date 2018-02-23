@@ -11,7 +11,8 @@ var quotes = require('./quotes.js');
 var sentiment = require('./sentiment.js');
 
 var compq_index = [ ];
-var nasdaq_adv, nasdaq_dec;
+var nasdaq_adv;
+var nasdaq_dec;
 
 var Markets = module.exports = {
     _hours: [ { next_open_date: null } ],
@@ -52,7 +53,8 @@ var Markets = module.exports = {
         let macdh = ta.MACDH(nasdaq_composite);
 
         let sma100 = ta.SMA(nasdaq_composite, 100);
-        let buy = 0, sell = 0;
+        let buy = 0;
+        let sell = 0;
 
         // determine BUY strength
         if (nasdaq_composite[0].close > sma100) buy++;
@@ -83,7 +85,7 @@ var Markets = module.exports = {
         console.log(log);
         console.log("");
 
-        this.breadth = signal;    
+        this.breadth = signal;
     }
 }
 
