@@ -1,5 +1,5 @@
-var n = require("numbro");
-var conf = require("./conf");
+const n = require("numbro");
+const conf = require("./conf");
 
 module.exports = {
   download(cb) {

@@ -1,19 +1,19 @@
-var series = require("run-series");
-var n = require("numbro");
-var pad = require("pad");
-var colors = require("colors");
-var request = require("request");
+const series = require("run-series");
+const n = require("numbro");
+const pad = require("pad");
+const colors = require("colors");
+const request = require("request");
 
-var ta = require("./technical.js");
-var dates = require("./isodate.js");
-var quotes = require("./quotes.js");
-var sentiment = require("./sentiment.js");
+const ta = require("./technical.js");
+const dates = require("./isodate.js");
+const quotes = require("./quotes.js");
+const sentiment = require("./sentiment.js");
 
-var compq_index = [];
-var nasdaq_adv;
-var nasdaq_dec;
+let compq_index = [];
+let nasdaq_adv;
+let nasdaq_dec;
 
-var Markets = (module.exports = {
+const Markets = (module.exports = {
   _hours: [{ next_open_date: null }],
 
   download(cb) {

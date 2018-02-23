@@ -1,7 +1,7 @@
-var dates = require("./isodate.js");
-var series = require("run-series");
-var request = require("request");
-var n = require("numbro");
+const dates = require("./isodate.js");
+const series = require("run-series");
+const request = require("request");
+const n = require("numbro");
 
 module.exports = {
   download(list, cb) {
@@ -115,7 +115,7 @@ function parse_realtime(body) {
   //console.log(body);
   body.results.forEach(item => {
     // adjust today quotes with real-time data
-    var quote = quotes_today[item.symbol];
+    const quote = quotes_today[item.symbol];
     quote.close = n(item.last_trade_price).value();
     quote.high = Math.max(quote.high, quote.close);
     quote.low = Math.min(quote.low, quote.close);

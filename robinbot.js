@@ -1,24 +1,24 @@
 #! /usr/local/bin/node
 
-var series = require("run-series");
-var n = require("numbro");
+const series = require("run-series");
+const n = require("numbro");
 
-var dates = require("./isodate.js");
-var ta = require("./technical.js");
-var sentiment = require("./sentiment.js");
-var markets = require("./markets.js");
-var quotes = require("./quotes.js");
-var instruments = require("./instruments.js");
-var earnings = require("./earnings.js");
-var strategy = require("./strategy.js");
-var positions = require("./positions.js");
-var rsa = require("./rsa.js");
-var account = require("./account.js");
-var actions = require("./actions.js");
-var orders = require("./orders.js");
-var conf = require("./conf.js");
+const dates = require("./isodate.js");
+const ta = require("./technical.js");
+const sentiment = require("./sentiment.js");
+const markets = require("./markets.js");
+const quotes = require("./quotes.js");
+const instruments = require("./instruments.js");
+const earnings = require("./earnings.js");
+const strategy = require("./strategy.js");
+const positions = require("./positions.js");
+const rsa = require("./rsa.js");
+const account = require("./account.js");
+const actions = require("./actions.js");
+const orders = require("./orders.js");
+const conf = require("./conf.js");
 
-var opt = require("node-getopt")
+const opt = require("node-getopt")
   .create([
     ["t", "trade", "trade mode (default = paper)"],
     ["s", "strategy=ARG", "macd, sar, k39, slow_stoch (default k39)"],
@@ -29,7 +29,7 @@ var opt = require("node-getopt")
 
 conf.trade = opt.options.trade;
 conf.strategy = opt.options.strategy ? opt.options.strategy : "default";
-var clist = conf.list;
+const clist = conf.list;
 
 console.log(
   "*** ROBINBOT (" +
@@ -43,7 +43,7 @@ console.log(
 global.quandl = new require("quandl")({ auth_token: conf.quandl_token });
 
 global.Robinhood = require("robinhood")(conf.robinhood_credentials, () => {
-  var downloads = [
+  const downloads = [
     cb => {
       instruments.download(clist, cb);
     },

@@ -1,4 +1,4 @@
-var c = (module.exports = {});
+const c = (module.exports = {});
 
 // maximum pertfolio allocation per possition (7%)
 c.POSITION_SIZING = 0.07;

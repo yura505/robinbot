@@ -1,8 +1,8 @@
 // Sentiment Survey
 
-var dates = require("./isodate.js");
+const dates = require("./isodate.js");
 
-var Sentiment = (module.exports = {
+const Sentiment = (module.exports = {
   download(cb) {
     console.log("Downloading sentiment survey...");
     global.quandl.dataset(
@@ -10,7 +10,7 @@ var Sentiment = (module.exports = {
       { start_date: dates.two_years_ago },
       (err, response) => {
         if (err) return cb(err);
-        var data = JSON.parse(response);
+        const data = JSON.parse(response);
         if (data.quandl_error !== undefined) {
           console.error(
             data.quandl_error.code + " " + data.quandl_error.message
@@ -31,7 +31,7 @@ var Sentiment = (module.exports = {
   }
 });
 
-var result;
+let result;
 var _data;
 
 function _analyse() {

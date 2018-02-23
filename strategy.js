@@ -1,18 +1,18 @@
-var n = require("numbro");
-var pad = require("pad");
-var colors = require("colors");
+const n = require("numbro");
+const pad = require("pad");
+const colors = require("colors");
 
-var ta = require("./technical.js");
-var markets = require("./markets.js");
-var quotes = require("./quotes.js");
-var earnings = require("./earnings.js");
-var positions = require("./positions.js");
-var dates = require("./isodate.js");
-var rsa = require("./rsa.js");
-var actions = require("./actions.js");
-var conf = require("./conf.js");
+const ta = require("./technical.js");
+const markets = require("./markets.js");
+const quotes = require("./quotes.js");
+const earnings = require("./earnings.js");
+const positions = require("./positions.js");
+const dates = require("./isodate.js");
+const rsa = require("./rsa.js");
+const actions = require("./actions.js");
+const conf = require("./conf.js");
 
-var strategy = (module.exports = {
+const strategy = (module.exports = {
   default(...args) {
     return this.k39(...args);
   },

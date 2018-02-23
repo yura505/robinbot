@@ -1,5 +1,5 @@
-var request = require("request");
-var earnings = require("./earnings.js");
+const request = require("request");
+const earnings = require("./earnings.js");
 
 module.exports = {
   download(list, cb) {
@@ -44,7 +44,7 @@ function download_financials(cb) {
         download_historocal(cb);
       }, 10000);
     }
-    var data = JSON.parse(body);
+    const data = JSON.parse(body);
     for (symbol in data) {
       financials[symbol] = data[symbol].financials.financials;
       financials_list.splice(financials_list.indexOf(symbol), 1);

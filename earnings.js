@@ -1,8 +1,8 @@
-var request = require("request");
-var series = require("run-series");
+const request = require("request");
+const series = require("run-series");
 
-var dates = require("./isodate.js");
-var markets = require("./markets.js");
+const dates = require("./isodate.js");
+const markets = require("./markets.js");
 
 module.exports = {
   download(list, cb) {

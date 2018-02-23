@@ -14,9 +14,9 @@ module.exports = {
     return getNdaysAgoDate(365 * 2);
   },
   diff(first, second) {
-    var oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
-    var firstDate = new Date(first);
-    var secondDate = new Date(second);
+    const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+    const firstDate = new Date(first);
+    const secondDate = new Date(second);
     return Math.round(
       Math.abs((firstDate.getTime() - secondDate.getTime()) / oneDay)
     );

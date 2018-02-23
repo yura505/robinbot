@@ -1,12 +1,12 @@
-var series = require("run-series");
-var n = require("numbro");
+const series = require("run-series");
+const n = require("numbro");
 
-var dates = require("./isodate.js");
-var instruments = require("./instruments.js");
-var account = require("./account.js");
-var positions = require("./positions.js");
-var conf = require("./conf.js");
-var quotes = require("./quotes.js");
+const dates = require("./isodate.js");
+const instruments = require("./instruments.js");
+const account = require("./account.js");
+const positions = require("./positions.js");
+const conf = require("./conf.js");
+const quotes = require("./quotes.js");
 
 module.exports = {
   download(cb) {
@@ -194,7 +194,7 @@ module.exports = {
   },
 
   place() {
-    var orders = [
+    const orders = [
       this.cancelStopOrders,
       ...sell_orders,
       ...buy_orders,

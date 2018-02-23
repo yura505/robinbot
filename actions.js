@@ -1,14 +1,14 @@
-var n = require("numbro");
+const n = require("numbro");
 
-var orders = require("./orders.js");
-var positions = require("./positions.js");
-var account = require("./account.js");
-var quotes = require("./quotes.js");
-var rsa = require("./rsa.js");
-var conf = require("./conf.js");
-var markets = require("./markets.js");
+const orders = require("./orders.js");
+const positions = require("./positions.js");
+const account = require("./account.js");
+const quotes = require("./quotes.js");
+const rsa = require("./rsa.js");
+const conf = require("./conf.js");
+const markets = require("./markets.js");
 
-var actions = (module.exports = {
+const actions = (module.exports = {
   create(symbol, signal, ta, count, price) {
     return {
       symbol,
@@ -107,8 +107,8 @@ var actions = (module.exports = {
 
     do {
       var min_action = (() => {
-        var ret_action;
-        var min_allocated;
+        let ret_action;
+        let min_allocated;
         actions.buy.forEach(action => {
           let allocated =
             (positions.quantity(action.symbol) + action.count + 1) *
@@ -143,7 +143,7 @@ var actions = (module.exports = {
   },
 
   allocate_stops() {
-    var stop_list = {};
+    const stop_list = {};
     [...this.buy, ...this.hold].forEach(action => {
       if (action.symbol in stop_list) {
         stop_list[action.symbol].count += action.count;
@@ -180,7 +180,7 @@ var actions = (module.exports = {
       }
     }
     if (stop_loss < quotes.get(symbol)[0].close) {
-      var action = this.create(symbol, "STOP", ta, count, stop_loss);
+      const action = this.create(symbol, "STOP", ta, count, stop_loss);
       this.add(action);
     }
   },

@@ -1,9 +1,9 @@
-var series = require("run-series");
+const series = require("run-series");
 
 module.exports = {
   download(list, cb) {
-    var tickers = [];
-    var instruments_tasks = [];
+    const tickers = [];
+    const instruments_tasks = [];
     process.stdout.write("Downloading instruments: [ ");
     list.forEach(symbol => {
       tickers.push(symbol);

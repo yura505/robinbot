@@ -1,5 +1,5 @@
-var quotes = require("./quotes.js");
-var markets = require("./markets.js");
+const quotes = require("./quotes.js");
+const markets = require("./markets.js");
 
 module.exports = {
   m1(symbol) {

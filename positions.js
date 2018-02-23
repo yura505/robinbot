@@ -1,7 +1,7 @@
-var n = require("numbro");
+const n = require("numbro");
 
-var instruments = require("./instruments.js");
-var quotes = require("./quotes.js");
+const instruments = require("./instruments.js");
+const quotes = require("./quotes.js");
 
 module.exports = {
   download(cb) {
@@ -35,7 +35,7 @@ module.exports = {
 
   /* backtest methods */
   add(symbol, price, count) {
-    var pos = this.exists(symbol);
+    const pos = this.exists(symbol);
     if (pos === undefined) {
       let url = instruments.addSymbol(symbol);
       nonzero_positions.push({
@@ -61,7 +61,7 @@ module.exports = {
   },
 
   remove(symbol, price, count) {
-    var pos = this.exists(symbol);
+    const pos = this.exists(symbol);
     if (pos !== undefined) {
       if (pos.quantity == count) {
         nonzero_positions = nonzero_positions.filter(item => item !== pos);
