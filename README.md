@@ -12,7 +12,7 @@ Robinbot is a command-line swing trading bot using Node.js and unofficial Robinh
 - Market breadth analysis
 - User defined strategies
 - Fundamental analysis
-- Backtest
+- Last year backtest
 
 The bot performs technical analysis and places orders, for best results it should be run once a day at the end of market day, ex. 15 minutes before close.
 
@@ -38,8 +38,8 @@ cp conf-sample.js conf.js
 ```
 
 - View and edit `conf.js`.
-- It's possible to use Robinbot in "paper trading" mode without making any changes.
-- You must add your Robinhood login/password and quandl API key to configuration file.
+- You must add your Robinhood login/password and Quandl API key to configuration file for paper and live trading.
+- For backtesting you have to provide only your Quandl API key to conf.js, no Robinhood credentials needed.
 - Quandl API key can be free obtained from quandl.com
 
 Install dependencies:
@@ -85,8 +85,12 @@ Default strategies there just for information and they should not be used as is 
 
 ## TODO
 
-- Fix defects
-- Implement new features
+- Use neural networks, genetic algorithms, machine learning
+- Add more strategies, include adaptive
+- Add stock screener to find securities to trade
+- More accurate backtest with slippages and liqudity
+- Adopt it for different brokers
+- Improve usability and documentation
 
 Thanks!
 
