@@ -10,7 +10,7 @@
     "pad": "^2.0.3",
     "quandl": "^0.0.6",
     "robinhood": "https://github.com/yura505/robinhood-node",
-    "run-series": "^1.1.4",
+    "run-series": "^1.1.4"
   },
   "devDependencies": {},
   "scripts": {
