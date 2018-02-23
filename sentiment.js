@@ -1,69 +1,77 @@
-
 // Sentiment Survey
 
-var dates = require('./isodate.js');
+var dates = require("./isodate.js");
 
-var Sentiment = module.exports = {
-    download(cb) {
-        console.log("Downloading sentiment survey...");
-        global.quandl.dataset({ source: "AAII", table: "AAII_SENTIMENT" },
-            { start_date: dates.two_years_ago },
-            (err, response) => {
-                if (err) return cb(err);
-                var data = JSON.parse(response);
-                if (data.quandl_error !== undefined) {
-                    console.error(data.quandl_error.code + " " + data.quandl_error.message);
-                    setTimeout(() => {
-                        Sentiment.download(cb);
-                    }, 10000);
-                } else {
-                    _data = data;
-                    setTimeout(cb, 1000);
-                }
-            })
-    },
-        
-    analyse() {
-        return _analyse();
-    }
-}
+var Sentiment = (module.exports = {
+  download(cb) {
+    console.log("Downloading sentiment survey...");
+    global.quandl.dataset(
+      { source: "AAII", table: "AAII_SENTIMENT" },
+      { start_date: dates.two_years_ago },
+      (err, response) => {
+        if (err) return cb(err);
+        var data = JSON.parse(response);
+        if (data.quandl_error !== undefined) {
+          console.error(
+            data.quandl_error.code + " " + data.quandl_error.message
+          );
+          setTimeout(() => {
+            Sentiment.download(cb);
+          }, 10000);
+        } else {
+          _data = data;
+          setTimeout(cb, 1000);
+        }
+      }
+    );
+  },
+
+  analyse() {
+    return _analyse();
+  }
+});
 
 var result;
 var _data;
 
 function _analyse() {
-    let cBullish = _data.dataset.column_names.indexOf("Bullish");
-    let cBullishPlus = _data.dataset.column_names.indexOf("Bullish Average + St. Dev");
-    let cBullishMinus = _data.dataset.column_names.indexOf("Bullish Average - St. Dev");
-    
-    let signal;
-    
-    let data = _data.dataset.data.slice();
-    if (global.backtest) {
-        while (new Date(data[0][0]) > new Date(dates.today)) {
-            data = data.slice(1);
-        }
-    }
-    for (let i=0; i<data.length; i++) {
-        if (data[i+1][cBullish] > data[i][cBullish]) {
-            if ((i > 0) && (data[i][cBullish] < data[i-1][cBullish]))
-                break;
-            if ((data[i+1][cBullish] > data[i+1][cBullishPlus]) &&
-                (data[i][cBullish] < data[i][cBullishPlus])) {
-               signal = "SELL";
-               break;
-            }
-        } else {
-            if ((i > 0) && (data[i][cBullish] > data[i-1][cBullish]))
-                break;
-            if ((data[i+1][cBullish] < data[i+1][cBullishMinus]) &&
-                (data[i][cBullish] > data[i][cBullishMinus])) {
-               signal = "BUY";
-               break;
-            }
-        }
-    }
+  let cBullish = _data.dataset.column_names.indexOf("Bullish");
+  let cBullishPlus = _data.dataset.column_names.indexOf(
+    "Bullish Average + St. Dev"
+  );
+  let cBullishMinus = _data.dataset.column_names.indexOf(
+    "Bullish Average - St. Dev"
+  );
 
-    return { signal, value: data[0][cBullish] };
+  let signal;
+
+  let data = _data.dataset.data.slice();
+  if (global.backtest) {
+    while (new Date(data[0][0]) > new Date(dates.today)) {
+      data = data.slice(1);
+    }
+  }
+  for (let i = 0; i < data.length; i++) {
+    if (data[i + 1][cBullish] > data[i][cBullish]) {
+      if (i > 0 && data[i][cBullish] < data[i - 1][cBullish]) break;
+      if (
+        data[i + 1][cBullish] > data[i + 1][cBullishPlus] &&
+        data[i][cBullish] < data[i][cBullishPlus]
+      ) {
+        signal = "SELL";
+        break;
+      }
+    } else {
+      if (i > 0 && data[i][cBullish] > data[i - 1][cBullish]) break;
+      if (
+        data[i + 1][cBullish] < data[i + 1][cBullishMinus] &&
+        data[i][cBullish] > data[i][cBullishMinus]
+      ) {
+        signal = "BUY";
+        break;
+      }
+    }
+  }
+
+  return { signal, value: data[0][cBullish] };
 }
-
