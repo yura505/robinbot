@@ -41,7 +41,7 @@ EMA: function(x, length, key, source_key) {
         var prev_ema = x[i+1][key];
         if (typeof prev_ema === 'undefined' || isNaN(prev_ema)) {
             var sum = 0
-            x.slice(i, i+length-1).forEach(function (period) {
+            x.slice(i, i+length-1).forEach(period => {
                 sum += period[source_key];
             })
             prev_ema = sum / length
@@ -96,7 +96,7 @@ MACDH: function(x, offset, source_key) {
     if (!source_key) source_key = 'close';
     this.EMA(x, 12, 'ema_short', source_key);
     this.EMA(x, 26, 'ema_long', source_key);
-    x.forEach(function(period) {
+    x.forEach(period => {
         if (period['ema_short'] !== undefined && period['ema_long'] !== undefined) 
             period['macd'] = period['ema_short'] - period['ema_long'];
     });
@@ -167,14 +167,14 @@ slow_stochastic: function(x, k, d) {
     for (let j = 0; j < d; j++) {
       let stochs = [];
       for (let i = 0; i < d; i++)
-        stochs.push((function(x, length) {
+        stochs.push((((x, length) => {
             let low = [], high = [];
-            x.slice(0, length).forEach(function (period) {
+            x.slice(0, length).forEach(period => {
                 low.push(period.low);
                 high.push(period.high);
             });
             return 100 * (x[0].close - Math.min(...low)) / (Math.max(...high) - Math.min(...low));
-        })(x.slice(i+j), k));
+        }))(x.slice(i+j), k));
       stochK.push(stochs.reduce((sum, cur) => { return sum + cur; }, 0) / d);
     }
     let stochD = stochK.reduce((sum, cur) => { return sum + cur; }, 0) / d;
@@ -194,7 +194,7 @@ RSI: function(x) {
             var gain_sum = 0;
             var loss_sum = 0;
             var last_close;
-            x.slice(0, i+length-1).forEach(function (period) {
+            x.slice(0, i+length-1).forEach(period => {
                 if (last_close) {
                     if (period.close > last_close) {
                         gain_sum += period.close - last_close;

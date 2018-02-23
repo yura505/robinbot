@@ -9,12 +9,12 @@ var Sentiment = module.exports = {
             console.log("Downloading sentiment survey...");
             global.quandl.dataset({ source: "AAII", table: "AAII_SENTIMENT" },
                 { start_date: dates.two_years_ago },
-                function(err, response) {
+                (err, response) => {
                     if (err) return cb(err);
                     var data = JSON.parse(response);
                     if (data.quandl_error !== undefined) {
                         console.error(data.quandl_error.code + " " + data.quandl_error.message);
-                        setTimeout(function() {
+                        setTimeout(() => {
                             Sentiment.download(cb);
                         }, 10000);
                     } else {

@@ -21,7 +21,7 @@ var actions = module.exports = {
     },
     
     align: function() {
-        _actions.forEach(function(action) {
+        _actions.forEach(action => {
             // reset action.signal if needed
             if (((action.signal == "BUY") && (orders.isSoldToday(action.symbol) || markets.breadth !== "BUY")) ||
                 ((action.signal == "SELL") && (positions.exists(action.symbol) === undefined)))
@@ -55,10 +55,8 @@ var actions = module.exports = {
     },
     
     sum: function(actions) {
-        return (actions.length > 0) ? actions.reduce(function(total, action) {
-            return total + ((action.count !== undefined && action.price !== undefined) ? 
-                action.count * action.price : 0);
-        }, 0) : 0;
+        return (actions.length > 0) ? actions.reduce((total, action) => total + ((action.count !== undefined && action.price !== undefined) ? 
+            action.count * action.price : 0), 0) : 0;
     },
     
     distribute_cash: function() {
@@ -67,7 +65,7 @@ var actions = module.exports = {
         let portfolio_value = this.asset_value + cash;
         console.log("PORTFOLIO VALUE="+portfolio_value);
 
-        this.buy.forEach(function(action) {
+        this.buy.forEach(action => {
             let price = quotes.get(action.symbol)[0].close;
             if (portfolio_value * conf.POSITION_SIZING > price) {
                 action.price = price * 1.005;
@@ -76,32 +74,30 @@ var actions = module.exports = {
                 action.signal = null;
             }
         });
-        this.sell.forEach(function(action) {
+        this.sell.forEach(action => {
             let price = quotes.get(action.symbol)[0].close;
             let count = positions.quantity(action.symbol);
             action.price = price * 0.995;
             action.count = count;
             cash += count * price;
         });
-        this.hold.forEach(function(action) {
+        this.hold.forEach(action => {
             let count = positions.quantity(action.symbol);
             action.count = count;
         });
     
         if (this.buy.length > Math.trunc( 1 / conf.POSITION_SIZING)) {
-            this.buy.sort(function(a, b) {
-                return rsa.get(b.symbol) - rsa.get(a.symbol);
-            }).slice(Math.trunc( 1 / conf.POSITION_SIZING)).forEach(function(action) {
+            this.buy.sort((a, b) => rsa.get(b.symbol) - rsa.get(a.symbol)).slice(Math.trunc( 1 / conf.POSITION_SIZING)).forEach(action => {
                 action.signal = null;
             });
         }
 
 
         do {
-            var min_action = (function(){
+            var min_action = ((() => {
                 var ret_action;
                 var min_allocated;
-                actions.buy.forEach(function(action) {
+                actions.buy.forEach(action => {
                     let allocated = (positions.quantity(action.symbol) + action.count + 1) * action.price;
                     if (((!min_allocated) || (allocated < min_allocated)) && (allocated < portfolio_value * conf.POSITION_SIZING) && (!action.full)) {
                         min_allocated = allocated;
@@ -109,7 +105,7 @@ var actions = module.exports = {
                     }
                 });
                 return ret_action;
-            })();
+            }))();
             if (min_action) {
                 if (min_action.price < cash) {
                     min_action.count++;
@@ -130,7 +126,7 @@ var actions = module.exports = {
     
     allocate_stops: function() {
         var stop_list = { };
-        [...this.buy, ...this.hold].forEach(function(action) {
+        [...this.buy, ...this.hold].forEach(action => {
             if (action.symbol in stop_list) {
                 stop_list[action.symbol].count += action.count;
             } else {
@@ -169,9 +165,7 @@ var actions = module.exports = {
     
     get stop_risk() {
         let today_sum = 
-            [...this.keep, ...this.stop].reduce(function(total, action) {
-                return total + quotes.get(action.symbol)[0].close * action.count;
-            }, 0);
+            [...this.keep, ...this.stop].reduce((total, action) => total + quotes.get(action.symbol)[0].close * action.count, 0);
         let stop_sum = this.sum(this.stop) + this.sum(this.keep);
         return today_sum - stop_sum;
     },

@@ -8,7 +8,7 @@ module.exports = {
     download: function(cb) {
         console.log("Downloading nonzero positions...");
         global.Robinhood.nonzero_positions(
-            function(err, response, body){
+            (err, response, body) => {
                 if (err) return cb(err);
                 nonzero_positions = body.results;
                 cb();
@@ -65,7 +65,7 @@ module.exports = {
     },
     
     get value() {
-        return nonzero_positions.reduce(function(total, pos) {
+        return nonzero_positions.reduce((total, pos) => {
             let symbol = instruments.getSymbol(pos.url);
             return total + ((symbol !== undefined) ? n(pos.quantity).multiply(quotes.get(symbol)[0].close).value() : 0);
         }, 0);

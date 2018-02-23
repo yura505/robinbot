@@ -21,7 +21,7 @@ var strategy = module.exports = {
         console.log("SYMBOL  RANK   CLOSE  SMA50  SMA200  SS.K  ADX  MACD0   MACD     SAR      ATR   OBV/MA  RSI    EARNINGS   RESULT");
         console.log("------ ------ ------- ------ ------ ------ --- ------- ------ --------- ------- ------ ----- ------------ ------");
 
-        list.forEach(function(symbol) {
+        list.forEach(symbol => {
             let q = quotes.get(symbol);
             let e = earnings.getAnnouncement(symbol);
             let TA = {
@@ -133,7 +133,7 @@ var strategy = module.exports = {
     
     slow_stoch: function(symbol, TA) {
         let signal = null;
-        let ssd = (function(x) {
+        let ssd = ((x => {
             let status;
             for (let i=20; i>=0; i--) {
                 let ss = ta.slow_stochastic(x.slice(i));
@@ -151,7 +151,7 @@ var strategy = module.exports = {
                     status = 'SELL';
             }
             return status;
-        })(quotes.get(symbol));
+        }))(quotes.get(symbol));
         if ((TA.ss143.K > TA.ss143.D) && (ssd == "BUY") && (TA.obv < TA.obv_ma5) ) {
             signal = "BUY";
         } else if ((TA.ss143.K < TA.ss143.D) && (ssd == "SELL")) {

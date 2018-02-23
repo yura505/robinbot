@@ -7,12 +7,12 @@ var markets = require('./markets.js');
 
 module.exports = {
     download: function(list, cb) {
-        series([function(cb) {
+        series([cb => {
             _list = list.slice();
             download_recent_earnings(cb);
-        }, function(cb) {
+        }, cb => {
             download_earnings(cb);
-        }], function(err, result) {
+        }], (err, result) => {
             cb();
         });
     },
@@ -49,7 +49,7 @@ function download_earnings(cb) {
         let days = dates.diff(dates.today, markets.nextDate) + 1;
         console.log("Downloading earning announcements for "+days+" days...");
         global.Robinhood.earnings({ range: days },
-            function(err, resp, body) {
+            (err, resp, body) => {
                 if (err) return cb(err);
                 earnings_announcements = body.results;
                 cb();
@@ -61,10 +61,10 @@ function download_recent_earnings(cb) {
     console.log("Downloading recent earnings...");
     let url = "https://api.iextrading.com/1.0/stock/market/batch?symbols="+
               _list.slice(0,99).join(',')+"&types=earnings";
-    request(url, function(err, resp, body) {
+    request(url, (err, resp, body) => {
         if (err) {
             console.error(err);
-            return setTimeout(function() {
+            return setTimeout(() => {
                 download_recent_earnings(list, cb);
             }, 10000);
         }
@@ -73,7 +73,7 @@ function download_recent_earnings(cb) {
             let lst = jbody[symbol].earnings.earnings;
             earnings_history[symbol] = lst;
             if (global.backtest) {
-                lst.forEach(function(earning) {
+                lst.forEach(earning => {
                     earnings_announcements.push({
                         symbol: symbol,
                         report : { date: earning.EPSReportDate, timing: "am" }

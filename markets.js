@@ -18,7 +18,7 @@ var Markets = module.exports = {
     
     download: function(cb) {
         series([download_adv, download_dec, download_index, download_hours],
-                function(err, result) {
+                (err, result) => {
                     cb(err, result);
                 });
     },
@@ -29,9 +29,7 @@ var Markets = module.exports = {
     
     get isOpen() {
         let now = new Date();
-        return this._hours.forEach.reduce(function(total, cur) {
-            return total && (cur.is_open && (now < cur.closes_at) && (now > cur.opens_at));
-        }, true);
+        return this._hours.forEach.reduce((total, cur) => total && (cur.is_open && (now < cur.closes_at) && (now > cur.opens_at)), true);
     },
     
     get nextDate() {
@@ -94,12 +92,12 @@ function download_adv(cb) {
     console.log("Downloading number of stocks with Prices Advancing...");
     global.quandl.dataset({ source: "URC", table: "NASDAQ_ADV" },
         { start_date: dates.two_years_ago },
-        function(err, response) {
+        (err, response) => {
             if (err) return cb(err);
             let data = JSON.parse(response);
             if (data.quandl_error !== undefined) {
                 console.error(data.quandl_error.code + " " + data.quandl_error.message);
-                setTimeout(function() {
+                setTimeout(() => {
                     download_adv(cb);
                 }, 10000);
             } else {
@@ -114,12 +112,12 @@ function download_dec(cb) {
     console.log("Downloading number of stocks with Prices Declining...");
     global.quandl.dataset({ source: "URC", table: "NASDAQ_DEC" },
         { start_date: dates.two_years_ago },
-        function(err, response) {
+        (err, response) => {
             if (err) return cb(err);
             let data = JSON.parse(response);
             if (data.quandl_error !== undefined) {
                 console.error(data.quandl_error.code + " " + data.quandl_error.message);
-                setTimeout(function() {
+                setTimeout(() => {
                     download_dec(cb);
                 }, 10000);
             } else {
@@ -133,7 +131,7 @@ function download_dec(cb) {
 function download_index(cb) {
     console.log("Downloading NASDAQ Composite index...")
     let url = "https://api.iextrading.com/1.0/stock/ONEQ/batch?types=quote,chart&range=2y";
-    request(url, function(err, resp, body) {
+    request(url, (err, resp, body) => {
         if (err) {
             console.error(err);
             return setTimeout(download_index, 10000);
@@ -141,9 +139,7 @@ function download_index(cb) {
         let jbody = JSON.parse(body);
         let quote = jbody.quote;
         let chart = jbody.chart;
-        compq_index = chart.sort(function(a, b) {
-            return new Date(b.date) - new Date(a.date);
-        });
+        compq_index = chart.sort((a, b) => new Date(b.date) - new Date(a.date));
         quote.close = n(quote.latestPrice).value();
         compq_index.unshift(quote);
         cb();
@@ -156,12 +152,12 @@ function download_hours(cb) {
         return cb();
     }
     console.log("Downloading markets date/time...");
-    global.Robinhood.markets(function(err, resp, body){
+    global.Robinhood.markets((err, resp, body) => {
         if (err) return cb(err);
         let tasks = [];
-        body.results.forEach(function(result) {
-            tasks.push(function(cb) {
-                request(result.todays_hours, function(err, resp, body) {
+        body.results.forEach(result => {
+            tasks.push(cb => {
+                request(result.todays_hours, (err, resp, body) => {
                     if (err) return cb(err);
                     let jbody = JSON.parse(body);
                     let hours = {
@@ -175,7 +171,7 @@ function download_hours(cb) {
                 })
             })
         });
-        series(tasks, function(err, result) {
+        series(tasks, (err, result) => {
             if (err) cb(err);
             Markets._hours = result;
             cb();
@@ -196,7 +192,7 @@ function NASI() {
     }
     ta.EMA(rana, 19, 'e1');
     ta.EMA(rana, 39, 'e2');
-    rana.forEach(function(period) {
+    rana.forEach(period => {
         if (period['e1'] !== undefined && period['e2'] !== undefined) 
             period['mo'] = period['e1'] - period['e2'];
     });

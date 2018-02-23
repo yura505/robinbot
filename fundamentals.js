@@ -32,10 +32,10 @@ function download_financials(cb) {
     console.log("Downloading financials...");
     let url = "https://api.iextrading.com/1.0/stock/market/batch?symbols="+
               financials_list.slice(0, 99).join(',')+"&types=financials";
-    request(url, function(err, resp, body) {
+    request(url, (err, resp, body) => {
         if (err) {
             console.error(err);
-            return setTimeout(function() {
+            return setTimeout(() => {
                 download_historocal(cb);
             }, 10000);
         }

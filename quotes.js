@@ -9,7 +9,7 @@ module.exports = {
         historical_list = list.slice();
         today_list = list.slice();
         rt_list = list.slice();
-        series([download_historical, download_today, download_realtime], function(err, result) {
+        series([download_historical, download_today, download_realtime], (err, result) => {
             cb(err, result);
         });
     },
@@ -32,10 +32,10 @@ function download_historical(cb) {
     console.log("Downloading historical quotes...");
     let url = "https://api.iextrading.com/1.0/stock/market/batch?symbols="+
               historical_list.slice(0, 99).join(',')+"&types=chart&range=2y";
-    request(url, function(err, resp, body) {
+    request(url, (err, resp, body) => {
         if (err) {
             console.error(err);
-            return setTimeout(function() {
+            return setTimeout(() => {
                 download_historocal(cb);
             }, 10000);
         }
@@ -51,10 +51,10 @@ function download_today(cb) {
     console.log("Downloading delayed today quotes...");
     let url = "https://api.iextrading.com/1.0/stock/market/batch?symbols="+
               today_list.slice(0, 99).join(',')+"&types=quote";
-    request(url, function(err, resp, body) {
+    request(url, (err, resp, body) => {
         if (err) {
             console.error(err);
-            return setTimeout(function() {
+            return setTimeout(() => {
                 download_today(cb);
             }, 10000);
         }
@@ -71,10 +71,10 @@ function download_realtime(cb) {
         return cb();
     }
     console.log("Downloading real-time quotes...");
-    global.Robinhood.quote_data(rt_list, function(err, resp, body) {
+    global.Robinhood.quote_data(rt_list, (err, resp, body) => {
         if (err) {
             console.error(err);
-            return setTimeout(function() {
+            return setTimeout(() => {
                 download_realtime(cb);
             }, 10000);
         }
@@ -87,9 +87,7 @@ function download_realtime(cb) {
 function parse_historical(jquotes) {
     let quotes = JSON.parse(jquotes);
     for (symbol in quotes) {
-        let charts = quotes[symbol].chart.sort(function(a, b) {
-            return new Date(b.date) - new Date(a.date);
-        });
+        let charts = quotes[symbol].chart.sort((a, b) => new Date(b.date) - new Date(a.date));
         quotes_historical[symbol] = charts;
         historical_list.splice(historical_list.indexOf(symbol), 1);
     }
@@ -109,7 +107,7 @@ function parse_today(jquotes) {
 // parse realtime robinhood response
 function parse_realtime(body) {
     //console.log(body);
-    body.results.forEach(function(item) {
+    body.results.forEach(item => {
         // adjust today quotes with real-time data
         var quote = quotes_today[item.symbol];
         quote.close = n(item.last_trade_price).value();

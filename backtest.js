@@ -34,19 +34,18 @@ global.quandl = new require('quandl')({ auth_token: conf.quandl_token });
 
 // download backtest data
 var downloads = [
-       function(cb) {
+       cb => {
         sentiment.download(cb);
-    }, function(cb) {
+    }, cb => {
         quotes.download(clist, cb);
-    }, function(cb) {
+    }, cb => {
         markets.download(cb);
-    }, function(cb) {
+    }, cb => {
         earnings.download(clist, cb);
     }
 ];
 
-series(downloads, function(err, results)
-{
+series(downloads, (err, results) => {
     // run the backtest simulation
     account.cash = conf.backtest.cash;
     for (let i = 252; i > 0; i--) {

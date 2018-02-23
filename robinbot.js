@@ -33,28 +33,28 @@ console.log("*** ROBINBOT ("+(conf.trade ? "trade" : "paper")+" mode) today: "+
     
 global.quandl = new require('quandl')({ auth_token: conf.quandl_token });
 
-global.Robinhood = require('robinhood')(conf.robinhood_credentials, function(){
+global.Robinhood = require('robinhood')(conf.robinhood_credentials, () => {
     var downloads = [
-           function(cb) {
+           cb => {
             instruments.download(clist, cb);
-        }, function(cb) {
+        }, cb => {
             positions.download(cb);
-        }, function(cb) {
+        }, cb => {
             account.download(cb);
-        },function(cb) {
+        },cb => {
             orders.download(cb);
-        }, function(cb) {
+        }, cb => {
             sentiment.download(cb);
-        }, function(cb) {
+        }, cb => {
             quotes.download(clist, cb);
-        }, function(cb) {
+        }, cb => {
             markets.download(cb);
-        },  function(cb) {
+        },  cb => {
             earnings.download(clist, cb);
         }
     ];
 
-    series(downloads, function(err, results) {
+    series(downloads, (err, results) => {
         if (err) { 
             console.error("Error:");
             console.error(err);
