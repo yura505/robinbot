@@ -2,7 +2,7 @@
 var series = require("run-series");
 
 module.exports = {
-    download: function(list, cb) {
+    download(list, cb) {
         var tickers = [];
         var instruments_tasks = [];
         process.stdout.write("Downloading instruments: [ ");
@@ -29,18 +29,18 @@ module.exports = {
         });
     },
     
-    getSymbol: function(url) {
+    getSymbol(url) {
         let parts = url.split('/');
         let lastSegment = parts.pop() || parts.pop();
         return instrument_ticker[lastSegment];
     },
     
-    getInstrument: function(symbol) {
+    getInstrument(symbol) {
         return ticker_instrument[symbol];
     },
     
     /* backtest methods */
-    addSymbol: function(symbol) {
+    addSymbol(symbol) {
         let url = "/"+symbol+"/";
         ticker_instrument[symbol] = url; 
         instrument_ticker[symbol] = symbol;

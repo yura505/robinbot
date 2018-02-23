@@ -3,7 +3,7 @@
 
 module.exports = {
 
-ADX: function(x) {
+ADX(x) {
     let length = 14;
     for (let i = x.length-2; i >= 0; i--) {
         let TrueRange = Math.max(Math.max(x[i].high-x[i].low, Math.abs(x[i].high-x[i+1].close)), Math.abs(x[i].low-x[i+1].close));
@@ -27,7 +27,7 @@ ADX: function(x) {
     }
 },
 
-SMA: function(x, length, source_key) {
+SMA(x, length, source_key) {
     if (!source_key) source_key = 'close';
     let sma = x.slice(0, length).reduce((sum, cur) => {
           return sum + cur[source_key];
@@ -35,7 +35,7 @@ SMA: function(x, length, source_key) {
     return (sma / length);
 },
 
-EMA: function(x, length, key, source_key) {
+EMA(x, length, key, source_key) {
     if (!source_key) source_key = 'close';
     for (let i = x.length-length; i >= 0; i--) {
         var prev_ema = x[i+1][key];
@@ -52,7 +52,7 @@ EMA: function(x, length, key, source_key) {
     return x[0][key];
 },
 
-OBV: function(x) {
+OBV(x) {
     for (let i = x.length-2; i >= 0; i--) {
         let prev_obv = (x[i+1]['OBV'] !== undefined) ? x[i+1]['OBV'] : 0;
         if (x[i].close > x[i+1].close)
@@ -71,12 +71,11 @@ OBV: function(x) {
     return x[0]['OBV'];
 },
 
-TR: function(x0, x)
-{
+TR(x0, x) {
     return Math.max(x.high-x.low, Math.abs(x.high-x0.close), Math.abs(x.low-x0.close));
 },
 
-ATR: function(x, length) {
+ATR(x, length) {
     for (let i = x.length-length-2; i >= 0; i--) {
         var prev_atr = x[i+1]['ATR'];
         if (typeof prev_atr === 'undefined' || isNaN(prev_atr)) {
@@ -91,7 +90,7 @@ ATR: function(x, length) {
     return x[0]['ATR'];
 },
 
-MACDH: function(x, offset, source_key) {
+MACDH(x, offset, source_key) {
     if (!offset) offset = 0;
     if (!source_key) source_key = 'close';
     this.EMA(x, 12, 'ema_short', source_key);
@@ -104,7 +103,7 @@ MACDH: function(x, offset, source_key) {
     return (x[offset]['macd'] - x[offset]['signal']);
 },
 
-SAR: function(x) {
+SAR(x) {
     let iaf = 0.02, maxaf = 0.2;
     let bull = true;
     let af = iaf;
@@ -160,7 +159,7 @@ SAR: function(x) {
     return { psar: x[0].psar, bull: bull, reverse: reverse };
 },
 
-slow_stochastic: function(x, k, d) {
+slow_stochastic(x, k, d) {
     if (!k) k = 14;
     if (!d) d = 3;
     let stochK = [];
@@ -181,11 +180,11 @@ slow_stochastic: function(x, k, d) {
     return { K: stochK[0], D: stochD };
 },
 
-ohlc4: function(x) {
+ohlc4(x) {
     return (x.open + x.high + x.low + x.close) / 4;
 },
 
-RSI: function(x) {
+RSI(x) {
     let length = 14;
     for (let i = x.length-length; i >= 0; i--) {
         var avg_gain = x[i+1]['rsi_avg_gain'];

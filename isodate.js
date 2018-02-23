@@ -7,7 +7,7 @@ module.exports = {
     get yesterday() { return getNdaysAgoDate(1) },
     get year_ago() { return getNdaysAgoDate(365) },
     get two_years_ago() { return getNdaysAgoDate(365*2) },
-    diff: function(first, second) {
+    diff(first, second) {
         var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
         var firstDate = new Date(first);
         var secondDate = new Date(second);

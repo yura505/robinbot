@@ -4,27 +4,26 @@
 var dates = require('./isodate.js');
 
 var Sentiment = module.exports = {
-    download: 
-        function(cb) {
-            console.log("Downloading sentiment survey...");
-            global.quandl.dataset({ source: "AAII", table: "AAII_SENTIMENT" },
-                { start_date: dates.two_years_ago },
-                (err, response) => {
-                    if (err) return cb(err);
-                    var data = JSON.parse(response);
-                    if (data.quandl_error !== undefined) {
-                        console.error(data.quandl_error.code + " " + data.quandl_error.message);
-                        setTimeout(() => {
-                            Sentiment.download(cb);
-                        }, 10000);
-                    } else {
-                        _data = data;
-                        setTimeout(cb, 1000);
-                    }
-                })
-        },
+    download(cb) {
+        console.log("Downloading sentiment survey...");
+        global.quandl.dataset({ source: "AAII", table: "AAII_SENTIMENT" },
+            { start_date: dates.two_years_ago },
+            (err, response) => {
+                if (err) return cb(err);
+                var data = JSON.parse(response);
+                if (data.quandl_error !== undefined) {
+                    console.error(data.quandl_error.code + " " + data.quandl_error.message);
+                    setTimeout(() => {
+                        Sentiment.download(cb);
+                    }, 10000);
+                } else {
+                    _data = data;
+                    setTimeout(cb, 1000);
+                }
+            })
+    },
         
-    analyse: function() {
+    analyse() {
         return _analyse();
     }
 }

@@ -10,7 +10,7 @@ var conf = require('./conf.js');
 var markets = require('./markets.js');
 
 var actions = module.exports = {
-    create: function(symbol, signal, ta, count, price) {
+    create(symbol, signal, ta, count, price) {
         return {
             symbol: symbol,
             signal: signal,
@@ -20,7 +20,7 @@ var actions = module.exports = {
         }
     },
     
-    align: function() {
+    align() {
         _actions.forEach(action => {
             // reset action.signal if needed
             if (((action.signal == "BUY") && (orders.isSoldToday(action.symbol) || markets.breadth !== "BUY")) ||
@@ -29,7 +29,7 @@ var actions = module.exports = {
         });
     },
     
-    add: function(action) {
+    add(action) {
         _actions.push(action);
     },
 
@@ -54,12 +54,12 @@ var actions = module.exports = {
         return _actions.filter(action => action.signal == 'KEEP');
     },
     
-    sum: function(actions) {
+    sum(actions) {
         return (actions.length > 0) ? actions.reduce((total, action) => total + ((action.count !== undefined && action.price !== undefined) ? 
             action.count * action.price : 0), 0) : 0;
     },
     
-    distribute_cash: function() {
+    distribute_cash() {
         let cash = account.cash;
         console.log("CASH="+cash);
         let portfolio_value = this.asset_value + cash;
@@ -124,7 +124,7 @@ var actions = module.exports = {
         return positions.sum() - this.sum(this.sell) + this.sum(this.buy);
     },
     
-    allocate_stops: function() {
+    allocate_stops() {
         var stop_list = { };
         [...this.buy, ...this.hold].forEach(action => {
             if (action.symbol in stop_list) {
@@ -138,7 +138,7 @@ var actions = module.exports = {
         }
     },
 
-    stopLoss: function(symbol, count, ta) {    
+    stopLoss(symbol, count, ta) {    
         let position_ratio = (quotes.get(symbol)[0].close * count) / this.asset_value;
         let max_possible_loss = this.asset_value * conf.MAX_LOSS_THRESHOLD * position_ratio / conf.POSITION_SIZING;
         let max_loss = quotes.get(symbol)[0].close - max_possible_loss / count;
@@ -174,7 +174,7 @@ var actions = module.exports = {
         
     get all() { return _actions },
     
-    clear: function() { _actions = [ ] },
+    clear() { _actions = [ ] },
     
 }
     

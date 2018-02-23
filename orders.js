@@ -11,7 +11,7 @@ var quotes = require('./quotes.js');
 
 module.exports = {
 
-    download: function(cb) {
+    download(cb) {
         console.log("Downloading today orders...");
         global.Robinhood.orders({ updated_at: dates.today },
             (err, response, body) => {
@@ -21,7 +21,7 @@ module.exports = {
         });
     },
     
-    isSoldToday: function(symbol) {
+    isSoldToday(symbol) {
         if (!global.backtest) {
             for (let order of today_orders) {
                 if ((instruments.getSymbol(order.instrument) == symbol) &&
@@ -32,7 +32,7 @@ module.exports = {
         return false;
     },
     
-    getStopOrder: function(symbol) {
+    getStopOrder(symbol) {
         if (global.backtest) {
             for (let order of backtest_orders) {
                 if (order.symbol === symbol) return order;
@@ -46,7 +46,7 @@ module.exports = {
         }
     },
     
-    keepStopOrder: function(order) {
+    keepStopOrder(order) {
         if (global.backtest) {
             order.keep = true;
         } else {
@@ -54,7 +54,7 @@ module.exports = {
         }
     },
     
-    cancelStopOrders: function(cb) {
+    cancelStopOrders(cb) {
         let orders = [], tasks = [];
         today_orders.forEach(order => {
             if ((order.trigger == "stop") && (['queued', 'unconfirmed', 'confirmed', 'partially_filled'].includes(order.state))) {
@@ -87,7 +87,7 @@ module.exports = {
         });
     },
 
-    prepare: function(sell, buy, stop) {
+    prepare(sell, buy, stop) {
         sell.forEach(action => {
             if (action.count > 0) {
                 sell_orders.push(cb => {
@@ -177,7 +177,7 @@ module.exports = {
         });
     },
     
-    place: function() {
+    place() {
         var orders = [this.cancelStopOrders, ...sell_orders, ...buy_orders, ...stop_orders];
         series(orders, (err, result) => {
             if (err) {
@@ -191,7 +191,7 @@ module.exports = {
     
     /* backtest methods */
 
-    backtest: function(sell, buy, stop) {
+    backtest(sell, buy, stop) {
         backtest_orders = backtest_orders.filter(order => order.keep === true);
         sell.forEach(action => {
             if (action.count > 0) {
@@ -214,7 +214,7 @@ module.exports = {
         });
     },
     
-    triggerStops: function() {
+    triggerStops() {
         backtest_orders.forEach(order => {
             let quote = quotes.get(order.symbol)[0];
             if (order.stop_price > quote.open) {

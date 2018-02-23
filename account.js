@@ -3,7 +3,7 @@ var n = require('numbro');
 var conf = require('./conf');
 
 module.exports = {
-    download: function(cb) {
+    download(cb) {
         console.log("Downloading account information...");
         global.Robinhood.accounts(
             (err, response, body) => {

@@ -14,10 +14,10 @@ var actions = require('./actions.js');
 var conf = require('./conf.js');
 
 var strategy = module.exports = {
-    default: function(...args) {
+    default(...args) {
         return this.k39(...args);
     },
-    run: function(list) {
+    run(list) {
         console.log("SYMBOL  RANK   CLOSE  SMA50  SMA200  SS.K  ADX  MACD0   MACD     SAR      ATR   OBV/MA  RSI    EARNINGS   RESULT");
         console.log("------ ------ ------- ------ ------ ------ --- ------- ------ --------- ------- ------ ----- ------------ ------");
 
@@ -83,7 +83,7 @@ var strategy = module.exports = {
     
     // Strategies below. Use them as "robinbot -s ..."
     
-    macd: function(symbol, TA) {
+    macd(symbol, TA) {
         let signal = null;
 
         if ((TA.adx > 20) && (TA.diPlus > TA.diMinus) && (TA.macdh0 < 0) && (TA.macdh > 0)) {
@@ -94,7 +94,7 @@ var strategy = module.exports = {
         return signal;
     },
     
-    k39: function(symbol, TA) {
+    k39(symbol, TA) {
         let signal = null;
         let q = quotes.get(symbol);
         
@@ -123,7 +123,7 @@ var strategy = module.exports = {
         return signal;
     },
     
-    sar: function(symbol, TA) {
+    sar(symbol, TA) {
         let signal = null;
         if ((TA.adx > 20) && (TA.sar) && (TA.sar.reverse)) {
             signal = (TA.sar.bull) ? "BUY" : "SELL";
@@ -131,7 +131,7 @@ var strategy = module.exports = {
         return signal;
     },
     
-    slow_stoch: function(symbol, TA) {
+    slow_stoch(symbol, TA) {
         let signal = null;
         let ssd = ((x => {
             let status;

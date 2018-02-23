@@ -3,12 +3,12 @@ var request = require('request');
 var earnings = require('./earnings.js');
 
 module.exports = {
-    download: function(list, cb) {
+    download(list, cb) {
         financials_list = list.slice();
         download_financials(cb);
     },
     
-    criteria: function(symbol) {
+    criteria(symbol) {
         let cashFlowNotReduce = !isReduce(symbol, 'cashFlow');
         let operatingIncomeNotReduce = !isReduce(symbol, 'operatingIncome');
         let grossProfitNotReduce = !isReduce(symbol, 'grossProfit');

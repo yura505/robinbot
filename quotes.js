@@ -5,7 +5,7 @@ var request = require('request');
 var n = require('numbro');
 
 module.exports = {
-    download: function(list, cb) {
+    download(list, cb) {
         historical_list = list.slice();
         today_list = list.slice();
         rt_list = list.slice();
@@ -14,7 +14,7 @@ module.exports = {
         });
     },
 
-    get: function(symbol) {
+    get(symbol) {
         return (global.backtest_offset > 0) ? 
             quotes_historical[symbol].slice(global.backtest_offset) :
             [quotes_today[symbol], ...quotes_historical[symbol]];

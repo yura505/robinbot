@@ -16,14 +16,14 @@ var nasdaq_adv, nasdaq_dec;
 var Markets = module.exports = {
     _hours: [ { next_open_date: null } ],
     
-    download: function(cb) {
+    download(cb) {
         series([download_adv, download_dec, download_index, download_hours],
                 (err, result) => {
                     cb(err, result);
                 });
     },
     
-    download_index: function(cb) {
+    download_index(cb) {
         download_index(cb);
     },
     
@@ -44,7 +44,7 @@ var Markets = module.exports = {
         return compq_index;
     },
     
-    analyse: function() {
+    analyse() {
         let nasdaq_composite = (global.backtest_offset !== undefined) ?
             compq_index.slice(global.backtest_offset) : compq_index;
         let nasi = NASI();

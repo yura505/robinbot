@@ -6,7 +6,7 @@ var dates = require('./isodate.js');
 var markets = require('./markets.js');
 
 module.exports = {
-    download: function(list, cb) {
+    download(list, cb) {
         series([cb => {
             _list = list.slice();
             download_recent_earnings(cb);
@@ -17,7 +17,7 @@ module.exports = {
         });
     },
     
-    getAnnouncement: function(symbol) {
+    getAnnouncement(symbol) {
         for (let element of earnings_announcements) {
             if ((element.symbol == symbol) && 
                 (dates.diff(dates.today, element.report.date) <= 5) &&
@@ -26,13 +26,13 @@ module.exports = {
         }
     },
     
-    isEpsGrow: function(symbol) {
+    isEpsGrow(symbol) {
         let reports = earnings_history[symbol];
         let field = "actualEPS";
         return reports[0][field] > reports[1][field] && reports[0][field] > reports[reports.length-1][field];
     },
     
-    soon: function(symbol) {
+    soon(symbol) {
         let e = this.getAnnouncement(symbol);
         if (e !== undefined) {
            return ((e.date == dates.today && e.timing == "pm") || (e.date == markets.nextDate && e.timing == "am"))

@@ -5,7 +5,7 @@ var instruments = require('./instruments.js');
 var quotes = require('./quotes.js');
 
 module.exports = {
-    download: function(cb) {
+    download(cb) {
         console.log("Downloading nonzero positions...");
         global.Robinhood.nonzero_positions(
             (err, response, body) => {
@@ -15,7 +15,7 @@ module.exports = {
         })
     },
 
-    quantity: function(symbol) {
+    quantity(symbol) {
         for (let pos of nonzero_positions) {
             let ticker = instruments.getSymbol(pos.url);
             if (ticker == symbol) {
@@ -25,18 +25,18 @@ module.exports = {
         return 0;
     },
     
-    exists: function(symbol) {
+    exists(symbol) {
         for (let pos of nonzero_positions) {
             if (symbol == instruments.getSymbol(pos.url)) return pos;
         }
     },
     
-    sum: function() {
+    sum() {
          return this.value;
     },
     
     /* backtest methods */
-    add: function(symbol, price, count) {
+    add(symbol, price, count) {
         var pos = this.exists(symbol);
         if (pos === undefined) {
             let url = instruments.addSymbol(symbol);
@@ -48,7 +48,7 @@ module.exports = {
         return price * count;
     },
     
-    remove: function(symbol, price, count) {
+    remove(symbol, price, count) {
         var pos = this.exists(symbol);
         if (pos !== undefined) {
             if (pos.quantity == count) {
