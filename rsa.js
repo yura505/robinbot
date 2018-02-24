@@ -1,6 +1,7 @@
 
 var quotes = require('./quotes.js');
 var markets = require('./markets.js');
+var conf = require('./conf.js');
 
 module.exports = {
     m1: function(symbol) {
@@ -23,7 +24,11 @@ module.exports = {
     
     calculate: function(list) {
         for (let element of list) {
-            ranks[element] = this.m6(element);
+            ranks[element] = 
+                (conf.rsa_priority == "m1") ? this.m1(element) :
+                (conf.rsa_priority == "m3") ? this.m3(element) :
+                (conf.rsa_priority == "m6") ? this.m6(element) :
+                1;
         }
     },
     

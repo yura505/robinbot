@@ -22,6 +22,13 @@ c.market_breadth = false;
 // false: take risk and keep shares overnight
 c.earnings_announcements = true;
 
+// relative strength priority for portfolio allocation (m1, m3, m6, off)
+// m1: prioritize stocks by 1 month return
+// m3: prioritize stocks by 3 month return
+// m6: prioritize stocks by 6 month return
+// off: do not prioritize any stocks
+c.rsa_priority = "m6";
+
 // obtain token from www.quandl.com (free), need for market analysis
 c.quandl_token = "";
 
