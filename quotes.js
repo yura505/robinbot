@@ -15,9 +15,13 @@ module.exports = {
     },
 
     get: function(symbol) {
-        return (global.backtest_offset > 0) ? 
-            quotes_historical[symbol].slice(global.backtest_offset) :
-            [quotes_today[symbol], ...quotes_historical[symbol]];
+        let q = quotes_historical[symbol];
+        if (q && q.length > 0) {
+            return (global.backtest_offset > 0) ? 
+                q.slice(global.backtest_offset) :
+                [quotes_today[symbol], ...q];
+        }
+        return [];
     }
 }
 
@@ -85,7 +89,12 @@ function download_realtime(cb) {
 
 // parse iextrading historical response
 function parse_historical(jquotes) {
-    let quotes = JSON.parse(jquotes);
+    try {
+        var quotes = JSON.parse(jquotes);
+    } catch (error) {
+        console.log(error);
+        return;
+    }
     for (symbol in quotes) {
         let charts = quotes[symbol].chart.sort(function(a, b) {
             return new Date(b.date) - new Date(a.date);
@@ -97,7 +106,12 @@ function parse_historical(jquotes) {
 
 // parse iextrading today response
 function parse_today(jquotes) {
-    let quotes = JSON.parse(jquotes);
+    try {
+        var quotes = JSON.parse(jquotes);
+    } catch (error) {
+        console.log(error);
+        return;
+    }
     for (symbol in quotes) {
         let quote = quotes[symbol].quote;
         quote.volume = quote.latestVolume;
@@ -108,7 +122,6 @@ function parse_today(jquotes) {
 
 // parse realtime robinhood response
 function parse_realtime(body) {
-    //console.log(body);
     body.results.forEach(function(item) {
         // adjust today quotes with real-time data
         var quote = quotes_today[item.symbol];

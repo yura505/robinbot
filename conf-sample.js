@@ -6,6 +6,9 @@ c.POSITION_SIZING = 0.07;
 // maximum loss of whole portfolio per position (0.5%)
 c.MAX_LOSS_THRESHOLD = 0.005;
 
+// trailing stop mode (none, max, atr, sar)
+c.trailing_stop = "max";
+
 // obtain token from www.quandl.com (free)
 c.quandl_token = "";
 

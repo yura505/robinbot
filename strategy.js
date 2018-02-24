@@ -97,7 +97,7 @@ var strategy = module.exports = {
     k39: function(symbol, TA) {
         let signal = null;
         let q = quotes.get(symbol);
-        
+
         if (
             (TA.percentage > 0) && 
             (TA.sma50 > TA.sma200)
@@ -158,6 +158,10 @@ var strategy = module.exports = {
             signal = "SELL";
         }
         return signal;
+    },
+    
+    buy_and_hold: function(symbol, TA) {
+        return "BUY";
     }
     
 }

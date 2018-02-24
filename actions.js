@@ -143,27 +143,35 @@ var actions = module.exports = {
     },
 
     stopLoss: function(symbol, count, ta) {    
-        let position_ratio = (quotes.get(symbol)[0].close * count) / this.asset_value;
-        let max_possible_loss = this.asset_value * conf.MAX_LOSS_THRESHOLD * position_ratio / conf.POSITION_SIZING;
-        let max_loss = quotes.get(symbol)[0].close - max_possible_loss / count;
-        /* let atr_loss = quotes.get(symbol)[0].close - 3 * ta.atr;
-           let sar_loss = (ta.sar !== undefined && ta.sar.bull) ? ta.sar.psar : -1; */
-        // use max_loss, however ATR and SAR also can be considered
-        let stop_loss = max_loss;
-        let stop_order = orders.getStopOrder(symbol);
-        if (stop_order) {
-            let stop_price = n(stop_order.stop_price).value();
-            let quantity = n(stop_order.quantity).value();
-            if (stop_price > stop_loss) stop_loss = stop_price;
-            if ((quantity == count) && (stop_loss == stop_price)) {
-                actions.add(actions.create(symbol, "KEEP", ta, count, stop_price));
-                orders.keepStopOrder(stop_order);
-                return;
-            }
+        let stop_loss;
+        if (conf.trailing_stop == "max") {
+            let position_ratio = (quotes.get(symbol)[0].close * count) / this.asset_value;
+            let max_possible_loss = this.asset_value * conf.MAX_LOSS_THRESHOLD * position_ratio / conf.POSITION_SIZING;
+            let max_loss = quotes.get(symbol)[0].close - max_possible_loss / count;
+            stop_loss = max_loss;
+        } else if (conf.trailing_stop == "atr") {
+            let atr_loss = quotes.get(symbol)[0].close - 3 * ta.atr; // TODO: make 3 configurable
+            stop_loss = atr_loss;
+        } else if (conf.trailing_stop == "sar") {
+            let sar_loss = (ta.sar !== undefined && ta.sar.bull) ? ta.sar.psar : null;
+            stop_loss = sar_loss;
         }
-        if (stop_loss < quotes.get(symbol)[0].close) {
-            var action = this.create(symbol, "STOP", ta, count, stop_loss);
-            this.add(action);
+        if (stop_loss) {
+            let stop_order = orders.getStopOrder(symbol);
+            if (stop_order) {
+                let stop_price = n(stop_order.stop_price).value();
+                let quantity = n(stop_order.quantity).value();
+                if (stop_price > stop_loss) stop_loss = stop_price;
+                if ((quantity == count) && (stop_loss == stop_price)) {
+                    actions.add(actions.create(symbol, "KEEP", ta, count, stop_price));
+                    orders.keepStopOrder(stop_order);
+                    return;
+                }
+            }
+            if (stop_loss < quotes.get(symbol)[0].close) {
+                var action = this.create(symbol, "STOP", ta, count, stop_loss);
+                this.add(action);
+            }
         }
     },
     
