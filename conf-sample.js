@@ -9,7 +9,15 @@ c.MAX_LOSS_THRESHOLD = 0.005;
 // trailing stop mode (none, max, atr, sar)
 c.trailing_stop = "max";
 
-// obtain token from www.quandl.com (free)
+// market breadth impact (true / false)..
+// true:.
+//   - sell all if market fall down
+//   - don't buy anything if market is weak
+//   - buy only in strong up market directon
+// false: no not impact market breadth on trades.
+c.market_breadth = false;
+
+// obtain token from www.quandl.com (free), need for market analysis
 c.quandl_token = "";
 
 // Robinhood credentials

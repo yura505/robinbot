@@ -9,18 +9,22 @@ var ta = require('./technical.js');
 var dates = require('./isodate.js');
 var quotes = require('./quotes.js');
 var sentiment = require('./sentiment.js');
+var conf = require('./conf.js');
 
 var compq_index = [ ];
 var nasdaq_adv, nasdaq_dec;
 
 var Markets = module.exports = {
+    breadth: "BUY",
+
     _hours: [ { next_open_date: null } ],
     
     download: function(cb) {
-        series([download_adv, download_dec, download_index, download_hours],
-                function(err, result) {
-                    cb(err, result);
-                });
+        let tasks = [ download_hours, download_index ];
+        if (conf.market_breadth) {
+            tasks.push(download_adv, download_dec, sentiment.download);
+        }
+        series(tasks, (err, result) => cb(err, result));
     },
     
     download_index: function(cb) {

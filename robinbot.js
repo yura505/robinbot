@@ -5,7 +5,6 @@ var n = require('numbro');
 
 var dates = require('./isodate.js');
 var ta = require('./technical.js');
-var sentiment = require('./sentiment.js');
 var markets = require('./markets.js');
 var quotes = require('./quotes.js');
 var instruments = require('./instruments.js');
@@ -44,8 +43,6 @@ global.Robinhood = require('robinhood')(conf.robinhood_credentials, function(){
         },function(cb) {
             orders.download(cb);
         }, function(cb) {
-            sentiment.download(cb);
-        }, function(cb) {
             quotes.download(clist, cb);
         }, function(cb) {
             markets.download(cb);
@@ -61,7 +58,9 @@ global.Robinhood = require('robinhood')(conf.robinhood_credentials, function(){
             process.exit();
         }
         rsa.calculate(clist);
-        markets.analyse();
+        if (conf.market_breadth) {
+            markets.analyse();
+        }
         strategy.run(clist.sort(rsa.sort));
 
         actions.align();

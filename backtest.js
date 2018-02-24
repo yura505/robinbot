@@ -35,8 +35,6 @@ global.quandl = new require('quandl')({ auth_token: conf.quandl_token });
 // download backtest data
 var downloads = [
        function(cb) {
-        sentiment.download(cb);
-    }, function(cb) {
         quotes.download(clist, cb);
     }, function(cb) {
         markets.download(cb);
@@ -55,8 +53,10 @@ series(downloads, function(err, results)
         global.backtest_offset = i;
         dates._today_date = quotes.get(clist[0])[0].date;
         console.log("**Day:"+i+" "+dates.today);
-        
-        markets.analyse();
+
+        if (conf.market_breadth) {        
+            markets.analyse();
+        }
         orders.triggerStops();
         rsa.calculate(clist);
         strategy.run(clist.sort(rsa.sort));
