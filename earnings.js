@@ -4,6 +4,7 @@ var series = require("run-series");
 
 var dates = require('./isodate.js');
 var markets = require('./markets.js');
+var conf = require('./conf.js');
 
 module.exports = {
     download: function(list, cb) {
@@ -45,7 +46,7 @@ var earnings_history = { };
 var _list;
 
 function download_earnings(cb) {
-    if (global.Robinhood !== undefined) {
+    if ((global.Robinhood !== undefined) && (conf.earnings_announcements)) {
         let days = dates.diff(dates.today, markets.nextDate) + 1;
         console.log("Downloading earning announcements for "+days+" days...");
         global.Robinhood.earnings({ range: days },
