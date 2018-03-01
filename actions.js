@@ -110,7 +110,7 @@ const actions = {
     }
 
     do {
-      const min_action = (function() {
+      var min_action = (function() {
         let ret_action;
         let min_allocated;
         actions.buy.forEach(function(action) {
@@ -220,4 +220,5 @@ const actions = {
     _actions = [];
   }
 };
+
 module.exports = actions;

@@ -1,7 +1,7 @@
 const series = require("run-series");
 
-const ticker_instrument = {};
-const instrument_ticker = {};
+var ticker_instrument = {};
+var instrument_ticker = {};
 
 module.exports = {
   download: function(list, cb) {

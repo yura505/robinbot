@@ -3,7 +3,7 @@ const n = require("numbro");
 const instruments = require("./instruments.js");
 const quotes = require("./quotes.js");
 
-const nonzero_positions = [];
+var nonzero_positions = [];
 
 module.exports = {
   download: function(cb) {
@@ -37,7 +37,7 @@ module.exports = {
 
   /* backtest methods */
   add: function(symbol, price, count) {
-    const pos = this.exists(symbol);
+    let pos = this.exists(symbol);
     if (pos === undefined) {
       let url = instruments.addSymbol(symbol);
       nonzero_positions.push({
@@ -63,7 +63,7 @@ module.exports = {
   },
 
   remove: function(symbol, price, count) {
-    const pos = this.exists(symbol);
+    let pos = this.exists(symbol);
     if (pos !== undefined) {
       if (pos.quantity == count) {
         nonzero_positions = nonzero_positions.filter(item => item !== pos);

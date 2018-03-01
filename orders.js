@@ -8,12 +8,12 @@ const positions = require("./positions.js");
 const conf = require("./conf.js");
 const quotes = require("./quotes.js");
 
-const sell_orders = [];
-const buy_orders = [];
-const stop_orders = [];
-const backtest_orders = [];
+var sell_orders = [];
+var buy_orders = [];
+var stop_orders = [];
+var backtest_orders = [];
 
-let today_orders;
+var today_orders;
 
 module.exports = {
   download: function(cb) {

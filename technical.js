@@ -74,7 +74,7 @@ module.exports = {
         });
         prev_ema = sum / length;
       }
-      const multiplier = 2 / (length + 1);
+      let multiplier = 2 / (length + 1);
       x[i][key] = (x[i][source_key] - prev_ema) * multiplier + prev_ema;
     }
     return x[0][key];
@@ -144,7 +144,7 @@ module.exports = {
       if (x[i + 1].psar === undefined) x[i + 1].psar = x[i + 1].close;
       if (bull) x[i].psar = x[i + 1].psar + af * (hp - x[i + 1].psar);
       else x[i].psar = x[i + 1].psar + af * (lp - x[i + 1].psar);
-      let reverse = false;
+      var reverse = false;
       if (bull) {
         if (x[i].low < x[i].psar) {
           bull = false;
@@ -225,8 +225,8 @@ module.exports = {
   RSI: function(x) {
     let length = 14;
     for (let i = x.length - length; i >= 0; i--) {
-      const avg_gain = x[i + 1]["rsi_avg_gain"];
-      const avg_loss = x[i + 1]["rsi_avg_loss"];
+      let avg_gain = x[i + 1]["rsi_avg_gain"];
+      let avg_loss = x[i + 1]["rsi_avg_loss"];
       if (typeof avg_gain === "undefined") {
         let gain_sum = 0;
         let loss_sum = 0;
@@ -244,16 +244,16 @@ module.exports = {
         x[i]["rsi_avg_gain"] = gain_sum / length;
         x[i]["rsi_avg_loss"] = loss_sum / length;
       } else {
-        const current_gain = x[i].close - x[i + 1].close;
+        let current_gain = x[i].close - x[i + 1].close;
         x[i]["rsi_avg_gain"] =
           (avg_gain * (length - 1) + (current_gain > 0 ? current_gain : 0)) /
           length;
-        const current_loss = x[i + 1].close - x[i].close;
+        let current_loss = x[i + 1].close - x[i].close;
         x[i]["rsi_avg_loss"] =
           (avg_loss * (length - 1) + (current_loss > 0 ? current_loss : 0)) /
           length;
       }
-      const rs = x[i]["rsi_avg_gain"] / x[i]["rsi_avg_loss"];
+      let rs = x[i]["rsi_avg_gain"] / x[i]["rsi_avg_loss"];
       x[i]["rsi"] = Math.round(100 - 100 / (1 + rs));
     }
     return x[0]["rsi"];

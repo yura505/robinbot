@@ -5,7 +5,7 @@ const dates = require("./isodate.js");
 const markets = require("./markets.js");
 const conf = require("./conf.js");
 
-const earnings_history = {};
+var earnings_history = {};
 
 let earnings_announcements = [];
 let _list;

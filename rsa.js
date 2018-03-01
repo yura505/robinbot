@@ -2,7 +2,7 @@ const quotes = require("./quotes.js");
 const markets = require("./markets.js");
 const conf = require("./conf.js");
 
-const ranks = {};
+var ranks = {};
 
 module.exports = {
   m1: function(symbol) {

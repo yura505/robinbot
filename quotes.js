@@ -95,7 +95,7 @@ function download_realtime(cb) {
 // parse iextrading historical response
 function parse_historical(jquotes) {
   try {
-    const quotes = JSON.parse(jquotes);
+    var quotes = JSON.parse(jquotes);
   } catch (error) {
     console.log(error);
     return;
@@ -112,7 +112,7 @@ function parse_historical(jquotes) {
 // parse iextrading today response
 function parse_today(jquotes) {
   try {
-    const quotes = JSON.parse(jquotes);
+    var quotes = JSON.parse(jquotes);
   } catch (error) {
     console.log(error);
     return;
@@ -129,7 +129,7 @@ function parse_today(jquotes) {
 function parse_realtime(body) {
   body.results.forEach(function(item) {
     // adjust today quotes with real-time data
-    const quote = quotes_today[item.symbol];
+    let quote = quotes_today[item.symbol];
     quote.close = n(item.last_trade_price).value();
     quote.high = Math.max(quote.high, quote.close);
     quote.low = Math.min(quote.low, quote.close);

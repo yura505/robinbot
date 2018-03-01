@@ -11,7 +11,7 @@ var Sentiment = (module.exports = {
       { start_date: dates.two_years_ago },
       function(err, response) {
         if (err) return cb(err);
-        const data = JSON.parse(response);
+        let data = JSON.parse(response);
         if (data.quandl_error !== undefined) {
           console.error(
             data.quandl_error.code + " " + data.quandl_error.message
