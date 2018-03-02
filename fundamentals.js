@@ -1,7 +1,7 @@
 const request = require("request");
 const earnings = require("./earnings.js");
 
-var financials = {};
+let financials = {};
 
 let financials_list;
 

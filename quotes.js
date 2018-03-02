@@ -94,8 +94,9 @@ function download_realtime(cb) {
 
 // parse iextrading historical response
 function parse_historical(jquotes) {
+  let quotes;
   try {
-    var quotes = JSON.parse(jquotes);
+    quotes = JSON.parse(jquotes);
   } catch (error) {
     console.log(error);
     return;
@@ -111,8 +112,9 @@ function parse_historical(jquotes) {
 
 // parse iextrading today response
 function parse_today(jquotes) {
+  let quotes;
   try {
-    var quotes = JSON.parse(jquotes);
+    quotes = JSON.parse(jquotes);
   } catch (error) {
     console.log(error);
     return;

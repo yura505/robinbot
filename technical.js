@@ -137,6 +137,7 @@ module.exports = {
     let iaf = 0.02,
       maxaf = 0.2;
     let bull = true;
+    let reverse = false;
     let af = iaf;
     let lp = x[x.length - 1].low;
     let hp = x[x.length - 1].high;
@@ -144,7 +145,7 @@ module.exports = {
       if (x[i + 1].psar === undefined) x[i + 1].psar = x[i + 1].close;
       if (bull) x[i].psar = x[i + 1].psar + af * (hp - x[i + 1].psar);
       else x[i].psar = x[i + 1].psar + af * (lp - x[i + 1].psar);
-      var reverse = false;
+      reverse = false;
       if (bull) {
         if (x[i].low < x[i].psar) {
           bull = false;

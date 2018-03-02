@@ -3,7 +3,7 @@ const dates = require("./isodate.js");
 
 let _data;
 
-var Sentiment = (module.exports = {
+const Sentiment = (module.exports = {
   download: function(cb) {
     console.log("Downloading sentiment survey...");
     global.quandl.dataset(

@@ -1,12 +1,12 @@
 const series = require("run-series");
 
-var ticker_instrument = {};
-var instrument_ticker = {};
+let ticker_instrument = {};
+let instrument_ticker = {};
 
 module.exports = {
   download: function(list, cb) {
-    var tickers = [];
-    var instruments_tasks = [];
+    let tickers = [];
+    let instruments_tasks = [];
     process.stdout.write("Downloading instruments: [ ");
     list.forEach(function(symbol) {
       tickers.push(symbol);

@@ -3,7 +3,7 @@ const n = require("numbro");
 const instruments = require("./instruments.js");
 const quotes = require("./quotes.js");
 
-var nonzero_positions = [];
+let nonzero_positions = [];
 
 module.exports = {
   download: function(cb) {

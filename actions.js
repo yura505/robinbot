@@ -109,8 +109,9 @@ const actions = {
         });
     }
 
+    let min_action;
     do {
-      var min_action = (function() {
+      min_action = (function() {
         let ret_action;
         let min_allocated;
         actions.buy.forEach(function(action) {
@@ -192,7 +193,7 @@ const actions = {
         }
       }
       if (stop_loss < quotes.get(symbol)[0].close) {
-        var action = this.create(symbol, "STOP", ta, count, stop_loss);
+        let action = this.create(symbol, "STOP", ta, count, stop_loss);
         this.add(action);
       }
     }
