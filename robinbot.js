@@ -33,6 +33,10 @@ console.log("*** ROBINBOT ("+(conf.trade ? "trade" : "paper")+" mode) today: "+
 global.quandl = new require('quandl')({ auth_token: conf.quandl_token });
 
 global.Robinhood = require('robinhood')(conf.robinhood_credentials, function(){
+    if (global.Robinhood.auth_token() === undefined) {
+        console.error("Robinhood: authentication failed. Please check your credentials in conf.js");
+        process.exit();
+    }
     var downloads = [
            function(cb) {
             instruments.download(clist, cb);
