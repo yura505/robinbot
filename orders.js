@@ -59,7 +59,7 @@ module.exports = {
         today_orders.forEach(function(order) {
             if ((order.trigger == "stop") && (['queued', 'unconfirmed', 'confirmed', 'partially_filled'].includes(order.state))) {
                 let symbol = instruments.getSymbol(order.instrument);
-                if (conf.list[conf.strategy].includes(symbol)) {
+                if (conf.list.includes(symbol)) {
                     console.log("Cancel stop order: "+order.id);
                     orders.push(order);
                     tasks.push(function(cb) {
