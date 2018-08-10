@@ -73,7 +73,7 @@ function download_recent_earnings(cb) {
         for (let symbol in jbody) {
             let lst = jbody[symbol].earnings.earnings;
             earnings_history[symbol] = lst;
-            if (global.backtest) {
+            if (global.backtest && !lst === undefined) {
                 lst.forEach(function(earning) {
                     earnings_announcements.push({
                         symbol: symbol,
