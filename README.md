@@ -1,5 +1,7 @@
 # robinbot
 
+# NO LONGER MAINTAINED
+
 ## Description
 
 Robinbot is a command-line swing trading bot using Node.js and unofficial Robinhood API. It features:
